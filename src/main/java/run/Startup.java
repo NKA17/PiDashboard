@@ -23,7 +23,7 @@ public class Startup {
 
         PiFrame pf = new PiFrame();
 
-        Clock clock = new Clock(100,100);
+        Clock clock = new Clock(pf.getScreenPanel().getW(),pf.getScreenPanel().getH());
         clock.setUseMeridean(false);
         pf.addPiPanel(clock);
 

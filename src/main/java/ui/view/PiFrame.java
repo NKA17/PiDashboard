@@ -18,9 +18,7 @@ public class PiFrame extends JFrame implements Refreshable,ObservableContainer {
         setColor();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        screenPanel = new PiScreen(getWidth(),getHeight());
-        screenPanel.setW(100);
-        screenPanel.setH(100);
+        screenPanel = new PiScreen(getW(),getH(),this);
         screenPanel.setObserver(this);
         getContentPane().add(screenPanel);
 

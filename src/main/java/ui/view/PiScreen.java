@@ -1,6 +1,7 @@
 package ui.view;
 
 import ui.config.Configuration;
+import ui.tools.interfaces.ObservableContainer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -10,9 +11,16 @@ import java.util.List;
 public class PiScreen extends PiPanel {
 
     private List<PiPanel> panels = new ArrayList<>();
+    private double dw = 1;
+    private double dh = 1;
 
-    public PiScreen(int w, int h){
+    public PiScreen(int w, int h, ObservableContainer observer){
         super(w,h);
+        setObserver(observer);
+
+        dw = (double)getW() / (double)observer.getW();
+        dh = (double)getH() / (double)observer.getH();
+
         setBackground(Configuration.WINDOW_BG_COLOR);
     }
 
@@ -33,7 +41,7 @@ public class PiScreen extends PiPanel {
         BufferedImage screenImage = new BufferedImage(getW(), getH(), BufferedImage.TYPE_4BYTE_ABGR);
         Graphics screen = screenImage.getGraphics();
 
-        screen.setColor(Color.CYAN);
+        screen.setColor(getBackground());
         screen.fillRect(0,0,getW(),getH());
 
         for(PiPanel p: panels){
@@ -61,9 +69,12 @@ public class PiScreen extends PiPanel {
     }
 
     public void refit(int newW, int newH){
-        super.refit(newW,newH);
+        int oldW = getW();
+        int oldH = getH();
+
+        super.refit((int)(dw*newW),(int)(dh*newH));
         for(PiPanel pp: panels){
-            pp.refit(getW(),getH());
+            pp.refit(oldW,getW(),oldH,getH());
         }
     }
 }

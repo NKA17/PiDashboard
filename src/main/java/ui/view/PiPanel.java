@@ -12,20 +12,15 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
     private int h;
     private int x;
     private int y;
-    private double dw = -1;
-    private double dh = -1;
     private ObservableContainer observer;
 
     public PiPanel(){
-        dw = 1;
-        dh = 1;
         setup();
     }
 
     public PiPanel(int w, int h) {
         this.w = w;
         this.h = h;
-        setProportions(w,h);
         setup();
     }
 
@@ -35,23 +30,10 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
 
     public void setObserver(ObservableContainer observer) {
         this.observer = observer;
-        setProportions(observer.getW(),observer.getH());
-    }
-
-    public void setProportions(int ow, int oh){
-        dw = (double)getW() / (double)ow;
-        dh = (double)getH() / (double)oh;
     }
 
     private void setup(){
-        setDimensions();
         setBackground(Configuration.PANEL_BG_COLOR);
-    }
-
-    public void setDimensions(){
-        setW(w*dw);
-        setH(h*dh);
-        setPreferredSize(new Dimension(getW(),getH()));
     }
 
     public abstract void draw(Graphics g);
@@ -63,7 +45,7 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
     public void setW(int w) {
         this.w = w;
         if(getObserver()!=null){
-            this.dw = (double)getObserver().getW() / (double)w;
+
         }
     }
 
@@ -74,7 +56,7 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
     public void setH(int h) {
         this.h = h;
         if(getObserver()!=null){
-            this.dh = (double)getObserver().getH() / (double)h;
+
         }
     }
 
@@ -106,7 +88,13 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
 
     public void refit(int newW, int newH){
         //setProportions(newW,newH);
-        setW(dw * newW);
-        setH(dh * newH);
+        setW(newW);
+        setH(newH);
+    }
+
+    public void refit(int oldW, int newW, int oldH, int newH){
+        double dw = (double) newW / (double) oldW;
+        double dh = (double) newH / (double) oldH;
+        refit((int)(dw*getW()),(int)(dh*getH()));
     }
 }
