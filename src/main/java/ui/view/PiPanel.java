@@ -1,8 +1,9 @@
 package ui.view;
 
+import realTime.RefreshRateHandler;
 import realTime.Refreshable;
-import ui.config.Configuration;
 import ui.tools.interfaces.ObservableContainer;
+import ui.widget.WeatherImage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +14,7 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
     private int x;
     private int y;
     private ObservableContainer observer;
+    private RefreshRateHandler refreshRateHandler = null;
 
     public PiPanel(){
         setup();
@@ -33,7 +35,7 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
     }
 
     private void setup(){
-        setBackground(Configuration.PANEL_BG_COLOR);
+        setBackground(null);
     }
 
     public abstract void draw(Graphics g);
@@ -44,9 +46,6 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
 
     public void setW(int w) {
         this.w = w;
-        if(getObserver()!=null){
-
-        }
     }
 
     public int getH() {
@@ -55,9 +54,6 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
 
     public void setH(int h) {
         this.h = h;
-        if(getObserver()!=null){
-
-        }
     }
 
     public void setW(double w){
@@ -86,15 +82,37 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
         this.y = y;
     }
 
-    public void refit(int newW, int newH){
+    public void reOrient(int newW, int newH){
         //setProportions(newW,newH);
         setW(newW);
         setH(newH);
     }
 
-    public void refit(int oldW, int newW, int oldH, int newH){
+    public void reOrient(int oldW, int newW, int oldH, int newH){
         double dw = (double) newW / (double) oldW;
         double dh = (double) newH / (double) oldH;
-        refit((int)(dw*getW()),(int)(dh*getH()));
+
+        setX((int)(getX()*dw));
+        setY((int)(getY()*dh));
+
+        reOrient((int)(dw*getW()),(int)(dh*getH()));
+    }
+
+    public abstract void update();
+
+    public final void refresh(){
+        if(refreshRateHandler != null && refreshRateHandler.isTimeToRefresh()){
+            update();
+        }
+    }
+    public void setRefreshInterval(long interval){
+        refreshRateHandler = new RefreshRateHandler(interval);
+        play();
+    }
+    public void play(){
+        refreshRateHandler.play();
+    }
+    public void pause(){
+        refreshRateHandler.pause();
     }
 }

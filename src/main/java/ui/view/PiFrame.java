@@ -8,21 +8,39 @@ import ui.tools.interfaces.ObservableContainer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PiFrame extends JFrame implements Refreshable,ObservableContainer {
 
-    private PiScreen screenPanel;
+    private List<PiScreen> screens = new ArrayList<>();
+    private JPanel drawPanel;
 
     public PiFrame(){
         setDimensions();
         setColor();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        screenPanel = new PiScreen(getW(),getH(),this);
-        screenPanel.setObserver(this);
-        getContentPane().add(screenPanel);
+        drawPanel = new JPanel();
+        drawPanel.setPreferredSize(new Dimension(getW(),getH()));
+        getContentPane().add(drawPanel);
 
         createResizeListener();
+    }
+
+    public PiScreen createScreen(int w, int h){
+        PiScreen screen = new PiScreen(w,h,this);
+        getContentPane().add(screen);
+        screens.add(screen);
+        return screen;
+    }
+
+    public List<PiScreen> getScreens() {
+        return screens;
+    }
+
+    public void setScreens(List<PiScreen> screens) {
+        this.screens = screens;
     }
 
     public void setColor(){
@@ -44,8 +62,10 @@ public class PiFrame extends JFrame implements Refreshable,ObservableContainer {
 
     @Override
     public void refresh() {
-        getScreenPanel().refresh();
-        screenPanel.repaint();
+        for(PiScreen s: screens){
+            s.refresh();
+            s.repaint();
+        }
     }
 
     @Override
@@ -57,25 +77,18 @@ public class PiFrame extends JFrame implements Refreshable,ObservableContainer {
         Ticker ticker = new Ticker(interval, this);
         Thread th = new Thread(ticker);
         th.start();
-    }
-
-    public void addPiPanel(PiPanel panel){
-        getScreenPanel().addPiPanel(panel);
-    }
-
-    public PiScreen getScreenPanel() {
-        return screenPanel;
-    }
-
-    public void setScreenPanel(PiScreen screenPanel) {
-        this.screenPanel = screenPanel;
+        for(PiScreen ps: screens){
+            ps.setRefreshInterval(interval);
+        }
     }
 
     private void createResizeListener(){
         ComponentListener cl = new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
-                getScreenPanel().refit(e.getComponent().getWidth(),e.getComponent().getHeight());
+                for(PiScreen screen: screens) {
+                    screen.reOrient(e.getComponent().getWidth(), e.getComponent().getHeight());
+                }
             }
 
             @Override

@@ -5,6 +5,7 @@ import thirdparty.weather.WeatherData;
 import ui.config.Configuration;
 import ui.config.Setup;
 import ui.view.PiFrame;
+import ui.view.PiScreen;
 import ui.widget.Clock;
 import ui.widget.WeatherImage;
 
@@ -23,14 +24,20 @@ public class Startup {
 
         PiFrame pf = new PiFrame();
 
-        Clock clock = new Clock(pf.getScreenPanel().getW(),pf.getScreenPanel().getH());
+        PiScreen clockScreen = pf.createScreen(pf.getW(),pf.getH());
+        Clock clock = new Clock(clockScreen.getW(),clockScreen.getH());
         clock.setUseMeridean(false);
-        pf.addPiPanel(clock);
+        clockScreen.addPiPanel(clock);
 
-//        WeatherAPI weatherAPI = new WeatherAPI();
-//        WeatherData weather = weatherAPI.getWeatherNow();
-//        WeatherImage weatherImage = new WeatherImage(weather);
-//        pf.addPiPanel(weatherImage);
+        Clock c = new Clock(100,60);
+        c.setX(200);
+        clockScreen.addPiPanel(c);
+
+        WeatherAPI weatherAPI = new WeatherAPI();
+        WeatherData weather = weatherAPI.getWeatherNow();
+        WeatherImage weatherImage = new WeatherImage(150,60,weather);
+        weatherImage.updateAfterMinutes(5);
+        clockScreen.addPiPanel(weatherImage);
 
         pf.timer(200);
 

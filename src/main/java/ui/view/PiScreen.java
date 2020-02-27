@@ -21,8 +21,10 @@ public class PiScreen extends PiPanel {
         dw = (double)getW() / (double)observer.getW();
         dh = (double)getH() / (double)observer.getH();
 
-        setBackground(Configuration.WINDOW_BG_COLOR);
+        setBackground(Configuration.PANEL_BG_COLOR);
     }
+
+
 
     public void paintComponent(Graphics g){
         draw(g);
@@ -42,17 +44,19 @@ public class PiScreen extends PiPanel {
         Graphics screen = screenImage.getGraphics();
 
         screen.setColor(getBackground());
-        screen.fillRect(0,0,getW(),getH());
+        screen.fillRect(0,0, getW(), getH());
 
         for(PiPanel p: panels){
             p.draw(screen);
+            //screen.setColor(Color.CYAN);
+            //screen.drawRect(p.getX(),p.getY(),p.getW(),p.getH());
         }
 
         g.drawImage(screenImage,0,0,null);
     }
 
     @Override
-    public void refresh() {
+    public void update() {
         for(PiPanel pp: panels){
             pp.refresh();
         }
@@ -68,13 +72,13 @@ public class PiScreen extends PiPanel {
         return false;
     }
 
-    public void refit(int newW, int newH){
+    public void reOrient(int newW, int newH){
         int oldW = getW();
         int oldH = getH();
 
-        super.refit((int)(dw*newW),(int)(dh*newH));
+        super.reOrient((int)(dw*newW),(int)(dh*newH));
         for(PiPanel pp: panels){
-            pp.refit(oldW,getW(),oldH,getH());
+            pp.reOrient(oldW,getW(),oldH,getH());
         }
     }
 }

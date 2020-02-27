@@ -2,7 +2,7 @@ package realTime;
 
 public class Ticker implements Runnable {
 
-    private int interval = 200;
+    private long interval = 200;
     private Refreshable refreshable;
 
     public Ticker(int interval, Refreshable refreshable) {

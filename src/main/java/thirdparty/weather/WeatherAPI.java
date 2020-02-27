@@ -8,7 +8,15 @@ public class WeatherAPI {
 
     ApiClient client = new ApiClient("https://api.weather.gov/");
 
+    public WeatherData fakeIt(){
+        WeatherData data = new WeatherData();
+        data.setWeather("Cloudy");
+        data.setTemperature(27);
+        data.setIconURL("https://api.weather.gov/icons/land/night/sct?size=small");
+        return data;
+    }
     public WeatherData getWeatherNow(){
+        System.out.println("MAKING REQUEST!!!");
         String endPoint;
 
         endPoint = getCoordinatesEndpoint();

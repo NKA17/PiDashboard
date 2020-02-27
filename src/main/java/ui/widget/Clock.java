@@ -35,6 +35,7 @@ public class Clock extends PiPanel {
         font = Configuration.TEXT_FONT;
         useRegularPersonTime();
         setForeground(Configuration.TEXT_COLOR);
+        setRefreshInterval(200);
     }
 
     private void configureFont(boolean inset){
@@ -79,7 +80,7 @@ public class Clock extends PiPanel {
 
     public String getTime(){
         Timestamp ts = new Timestamp(System.currentTimeMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        SimpleDateFormat sdf = new SimpleDateFormat(format.replaceAll(" xm",""));
         String time = sdf.format(ts);
 
         if(format.equalsIgnoreCase("HHmm")){
@@ -111,8 +112,9 @@ public class Clock extends PiPanel {
     }
 
     private String lastTime = "";
+
     @Override
-    public void refresh() {
+    public void update() {
         String pattern = "\\d+(:)?59.*";
 
         //pattern = ".*";
@@ -136,8 +138,8 @@ public class Clock extends PiPanel {
         return true;
     }
 
-    public void refit(int newW, int newH){
-        super.refit(newW,newH);
+    public void reOrient(int newW, int newH){
+        super.reOrient(newW,newH);
         configureFont(false);
     }
 }
