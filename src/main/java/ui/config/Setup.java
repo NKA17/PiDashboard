@@ -1,13 +1,45 @@
 package ui.config;
 
+import java.util.HashMap;
+
 public class Setup {
 
+    private static HashMap<String,String> argsMap = new HashMap<>();
     public static void setup(String[] args){
+
+        makeMap(args);
         System.out.println();
-        scripts(args);
-        dimensions(args);
-        wakeScreenTime(args);
-        cycleTime(args);
+        boolean c = config(args);
+        if(!c) {
+            System.out.println("Setup...");
+            scripts(args);
+            dimensions(args);
+            wakeScreenTime(args);
+            cycleTime(args);
+        }
+
+    }
+
+    private static void makeMap(String[] args){
+        argsMap = new HashMap<>();
+
+        for(int i = 0; i < args.length - 1; i++){
+            String k = args[i];
+            String v = args[i+1];
+            argsMap.put(k,v);
+        }
+    }
+
+    public static boolean config(String[] args){
+        String m = getArg("--config",args);
+        if(m != null){
+            System.out.println("Using config file...");
+            ConfigParser cp = new ConfigParser(m);
+            cp.apply();
+            return true;
+        }
+
+        return false;
     }
 
     private static void wakeScreenTime(String[] args){
@@ -73,9 +105,13 @@ public class Setup {
 
 
     private static String getArg(String arg, String[] args){
-        for(int i = 0; i < args.length-1; i++){
-            if(arg.equalsIgnoreCase(args[i]))
-                return args[i+1];
+//        for(int i = 0; i < args.length-1; i++){
+//            if(arg.equalsIgnoreCase(args[i]))
+//                return args[i+1];
+//        }
+
+        if(argsMap.containsKey(arg)){
+            return argsMap.get(arg);
         }
 
         return null;

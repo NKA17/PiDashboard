@@ -92,15 +92,17 @@ public class PiScreen extends PiPanel {
         RPiInterface.wakeScreen();
 
         if(updatedPanels.isEmpty()){
-//            DelayedAction action = new DelayedAction(Configuration.WAKE_SCREEN_TIME) {
-//                @Override
-//                public void action() {
-//                    if(PiPanel.updatedPanels.isEmpty()) {
-//                        RPiInterface.sleepScreen();
-//                    }
-//                }
-//            };
-//            action.deploy();
+            if(Configuration.WAKE_SCREEN_TIME != -1) {
+                DelayedAction action = new DelayedAction(Configuration.WAKE_SCREEN_TIME) {
+                    @Override
+                    public void action() {
+                        if(PiPanel.updatedPanels.isEmpty()) {
+                            RPiInterface.sleepScreen();
+                        }
+                    }
+                };
+                action.deploy();
+            }
         }else{
             DelayedAction action = new DelayedAction(Configuration.SWAP_TIME) {
                 @Override
