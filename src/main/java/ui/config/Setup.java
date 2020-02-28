@@ -4,42 +4,29 @@ import java.util.HashMap;
 
 public class Setup {
 
-    private static HashMap<String,String> argsMap = new HashMap<>();
+    private static ConfigParser configParser = null;
     public static void setup(String[] args){
+        System.out.println("Setup...");
+        String c = getArg("--config",args);
 
-        makeMap(args);
-        System.out.println();
-        boolean c = config(args);
-        if(!c) {
-            System.out.println("Setup...");
-            scripts(args);
-            dimensions(args);
-            wakeScreenTime(args);
-            cycleTime(args);
-        }
+        configParser = c != null
+                ? new ConfigParser(c)
+                : new ConfigParser(args);
 
+        scripts(args);
+        dimensions(args);
+        wakeScreenTime(args);
+        cycleTime(args);
+        print();
     }
 
-    private static void makeMap(String[] args){
-        argsMap = new HashMap<>();
-
-        for(int i = 0; i < args.length - 1; i++){
-            String k = args[i];
-            String v = args[i+1];
-            argsMap.put(k,v);
-        }
-    }
-
-    public static boolean config(String[] args){
-        String m = getArg("--config",args);
-        if(m != null){
-            System.out.println("Using config file...");
-            ConfigParser cp = new ConfigParser(m);
-            cp.apply();
-            return true;
+    private static void print(){
+        String p = getArg("--print");
+        if(p != null){
+            Configuration.PRINT = Boolean.parseBoolean(p);
         }
 
-        return false;
+        System.out.println("\tPrint Statements: "+p);
     }
 
     private static void wakeScreenTime(String[] args){
@@ -103,18 +90,22 @@ public class Setup {
         }
     }
 
-
     private static String getArg(String arg, String[] args){
-//        for(int i = 0; i < args.length-1; i++){
-//            if(arg.equalsIgnoreCase(args[i]))
-//                return args[i+1];
-//        }
+        if(configParser != null){
+            return getArg(arg);
+        }
 
-        if(argsMap.containsKey(arg)){
-            return argsMap.get(arg);
+        //this for loop should never be hit but its here just in case
+        for(int i = 0; i < args.length-1; i++){
+            if(arg.equalsIgnoreCase(args[i]))
+                return args[i+1];
         }
 
         return null;
+    }
+
+    private static String getArg(String arg){
+        return configParser.getArg(arg);
     }
 
     private static boolean checkFlag(String flag, String[] args){

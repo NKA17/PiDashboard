@@ -4,3 +4,5 @@
 --scripts=
 --cycleTime=
 --wakeTime=-1
+--images=
+--print=false

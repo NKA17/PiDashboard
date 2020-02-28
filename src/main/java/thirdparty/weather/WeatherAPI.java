@@ -2,6 +2,7 @@ package thirdparty.weather;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import raspberryPi.Printer;
 import thirdparty.ApiClient;
 
 public class WeatherAPI {
@@ -16,7 +17,7 @@ public class WeatherAPI {
         return data;
     }
     public WeatherData getWeatherNow(){
-        System.out.println("MAKING REQUEST!!!");
+        Printer.println("MAKING REQUEST!!!");
         String endPoint;
 
         endPoint = getCoordinatesEndpoint();

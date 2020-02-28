@@ -1,23 +1,45 @@
 package ui.config;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class ConfigParser {
 
 
     private String configLocation;
+    private HashMap<String,String> argsMap = new HashMap<>();
 
     public ConfigParser(String configLocation){
-        this.configLocation = configLocation;
+        makeMap(configLocation);
     }
 
-    public void apply(){
+    public ConfigParser(String[] args){
+        makeMap(args);
+    }
+
+    public String getArg(String arg){
+        if(containsKey(arg))
+            return argsMap.get(arg);
+        return null;
+    }
+
+    private void makeMap(String[] args){
+        argsMap = new HashMap<>();
+
+        for(int i = 0; i < args.length - 1; i++){
+            String k = args[i];
+            String v = args[i+1];
+            argsMap.put(k,v);
+        }
+    }
+
+    public boolean containsKey(String key){
+        return argsMap.containsKey(key) && !isNullEquivalent(argsMap.get(key));
+    }
+
+    public void makeMap(String configLocation){
         try{
             Scanner config = new Scanner(new File(configLocation));
-            List<String> args = new ArrayList<>();
             while (config.hasNextLine()){
                 String line = config.nextLine();
                 int index = line.indexOf('=');
@@ -31,23 +53,24 @@ public class ConfigParser {
                     continue;
                 }
 
-                args.add(key);
-                args.add(value);
+                argsMap.put(key,value);
             }
-            String[] arrayArgs = new String[args.size()];
-            for(int i = 0; i < arrayArgs.length; i++){
-                arrayArgs[i] = args.get(i);
-            }
-            Setup.setup(arrayArgs);
+            config.close();
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
+    public Iterator<String> iterator(){
+        return argsMap.keySet().iterator();
+    }
+
+    public boolean isNullEquivalent(String s){
+        return s.equalsIgnoreCase("")
+                || s.equalsIgnoreCase("default");
+    }
     private boolean skip(String k, String v) {
-        return k.equalsIgnoreCase("--config")
-                || v.equalsIgnoreCase("")
-                || v.equalsIgnoreCase("default");
+        return k.equalsIgnoreCase("--config");
     }
 
 }
