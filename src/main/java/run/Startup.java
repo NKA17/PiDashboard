@@ -1,7 +1,8 @@
 package run;
 
-import thirdparty.weather.WeatherAPI;
-import thirdparty.weather.WeatherData;
+
+import organization.ScreenOrganizer;
+import realTime.TimeUnit;
 import ui.config.Configuration;
 import ui.config.Setup;
 import ui.view.PiFrame;
@@ -24,19 +25,21 @@ public class Startup {
 
         PiFrame pf = new PiFrame();
 
-        PiScreen clockScreen = pf.createScreen(pf.getW(),pf.getH());
+        PiScreen clockScreen = pf.createScreen(pf.getContentPane().getWidth(),pf.getContentPane().getHeight()-20);
         Clock clock = new Clock(clockScreen.getW(),clockScreen.getH());
         clock.setUseMeridean(false);
         clockScreen.addPiPanel(clock);
 
+        ScreenOrganizer organizer = new ScreenOrganizer();
+        organizer.setMainPanel(clock);
+        clockScreen.setOrganizer(organizer);
+
         Clock c = new Clock(100,60);
         c.setX(200);
-        clockScreen.addPiPanel(c);
+        //clockScreen.addPiPanel(c);
 
-        WeatherAPI weatherAPI = new WeatherAPI();
-        WeatherData weather = weatherAPI.getWeatherNow();
-        WeatherImage weatherImage = new WeatherImage(150,60,weather);
-        weatherImage.updateAfterMinutes(5);
+        WeatherImage weatherImage = new WeatherImage(150,60);
+        weatherImage.updateAfter(1, TimeUnit.MINUTES);
         clockScreen.addPiPanel(weatherImage);
 
         pf.timer(200);

@@ -9,6 +9,10 @@ public abstract class DoubleAction extends PiAction {
         setState(ActionState.OPEN);
     }
 
+    public DoubleAction(long interval, TimeUnit tu) {
+        super(interval, tu);
+    }
+
     public boolean isActOnDeploy() {
         return actOnDeploy;
     }

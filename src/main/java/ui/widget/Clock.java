@@ -19,7 +19,7 @@ public class Clock extends PiPanel {
     private boolean useMeridean = true;
 
     public void useRegularPersonTime(){
-        format = "H:mm"+ (useMeridean ? " xm" : "");
+        format = format.split(" ")[0]+ (useMeridean ? " xm" : "");
         configureFont(false);
     }
 
@@ -35,7 +35,7 @@ public class Clock extends PiPanel {
         font = Configuration.TEXT_FONT;
         useRegularPersonTime();
         setForeground(Configuration.TEXT_COLOR);
-        setRefreshInterval(200);
+        setRefreshInterval(1000);
     }
 
     private void configureFont(boolean inset){
@@ -119,12 +119,13 @@ public class Clock extends PiPanel {
 
         //pattern = ".*";
 
+        Clock me = this;
         String time = getTime();
         if(time.matches(pattern) && !time.equalsIgnoreCase(lastTime)){
-            DelayedAction da = new DelayedAction(40000) {
+            DelayedAction da = new DelayedAction(56000) {
                 @Override
                 public void action() {
-                    RPiInterface.wakeScreen(50000);
+                    updatedPanels.add(me);
                 }
             };
             da.deploy();

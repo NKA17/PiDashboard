@@ -7,6 +7,10 @@ public abstract class DelayedAction extends PiAction {
         super(delay);
     }
 
+    public DelayedAction(long interval, TimeUnit tu) {
+        super(interval, tu);
+    }
+
     public abstract void action();
 
     @Override

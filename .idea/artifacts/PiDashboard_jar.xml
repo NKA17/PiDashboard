@@ -3,6 +3,8 @@
     <output-path>$PROJECT_DIR$/out/artifacts/PiDashboard_jar</output-path>
     <root id="archive" name="PiDashboard.jar">
       <element id="module-output" name="PiDashboard" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/json/json/20180130/json-20180130.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

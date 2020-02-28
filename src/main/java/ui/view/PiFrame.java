@@ -54,8 +54,8 @@ public class PiFrame extends JFrame implements Refreshable,ObservableContainer {
             dim = new Dimension(Configuration.WIDTH_CONSTRAINT,Configuration.HEIGHT_CONSTRAINT);
         }
 
-        setPreferredSize(dim);
-        setSize(dim);
+        setPreferredSize(new Dimension((int)dim.getWidth()+16,(int)dim.getHeight()+16));
+        setSize(new Dimension((int)dim.getWidth()+16,(int)dim.getHeight()+16));
         getContentPane().setPreferredSize(dim);
         getContentPane().setSize(dim);
     }

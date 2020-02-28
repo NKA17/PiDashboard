@@ -2,11 +2,16 @@ package ui.view;
 
 import realTime.RefreshRateHandler;
 import realTime.Refreshable;
+import realTime.TimeUnit;
 import ui.tools.interfaces.ObservableContainer;
 import ui.widget.WeatherImage;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public abstract class PiPanel extends JPanel implements Refreshable,ObservableContainer{
     private int w;
@@ -15,6 +20,8 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
     private int y;
     private ObservableContainer observer;
     private RefreshRateHandler refreshRateHandler = null;
+    public static Queue<PiPanel> updatedPanels = new ArrayBlockingQueue<PiPanel>(20);
+    private boolean allowReorganize = true;
 
     public PiPanel(){
         setup();
@@ -82,6 +89,14 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
         this.y = y;
     }
 
+    public boolean isAllowReorganize() {
+        return allowReorganize;
+    }
+
+    public void setAllowReorganize(boolean allowReorganize) {
+        this.allowReorganize = allowReorganize;
+    }
+
     public void reOrient(int newW, int newH){
         //setProportions(newW,newH);
         setW(newW);
@@ -109,10 +124,23 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
         refreshRateHandler = new RefreshRateHandler(interval);
         play();
     }
+    public void setRefreshInterval(long interval, TimeUnit tu){
+        switch (tu){
+            case HOURS:
+                interval *= 60;
+            case MINUTES:
+                interval *= 60;
+            case SECONDS:
+                interval *= 1000;
+        }
+        setRefreshInterval(interval);
+    }
     public void play(){
+        if(refreshRateHandler == null)return;
         refreshRateHandler.play();
     }
     public void pause(){
+        if(refreshRateHandler == null)return;
         refreshRateHandler.pause();
     }
 }

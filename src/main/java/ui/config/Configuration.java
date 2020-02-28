@@ -3,6 +3,8 @@ package ui.config;
 import java.awt.*;
 
 public class Configuration {
+    public static int WAKE_SCREEN_TIME = 40000;
+    public static int SWAP_TIME = 30000;
     public static String SCRIPT_LOCATION = "NOT SUPPLIED!";
     public static int WIDTH_CONSTRAINT = -1;
     public static int HEIGHT_CONSTRAINT = -1;

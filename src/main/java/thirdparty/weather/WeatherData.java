@@ -65,20 +65,24 @@ public class WeatherData {
     }
 
     public boolean equals(WeatherData wd){
-        return wd.getTemperature() == getTemperature()
+        return wd != null
+                && wd.getTemperature() == getTemperature()
                 && wd.getWeather().equalsIgnoreCase(getWeather())
                 && wd.getWindDirection().equalsIgnoreCase(getWindDirection())
                 && wd.getWindSpeed().equalsIgnoreCase(getWindSpeed());
     }
 
     public void update(WeatherData wd){
+        if(wd == null){
+            return;
+        }
         if(!wd.getWeather().equalsIgnoreCase(getWeather())){
             setIcon(null);
         }
 
         setIconURL(wd.getIconURL());
         setWeather(wd.getWeather());
-        setWindDirection(wd.getWindSpeed());
+        setWindSpeed(wd.getWindSpeed());
         setWindDirection(wd.getWindDirection());
         setTemperature(wd.getTemperature());
     }

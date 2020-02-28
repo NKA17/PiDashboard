@@ -3,6 +3,7 @@ package ui.widget;
 import raspberryPi.RPiInterface;
 import realTime.Refreshable;
 import realTime.Ticker;
+import realTime.TimeUnit;
 import thirdparty.weather.WeatherAPI;
 import thirdparty.weather.WeatherData;
 import ui.config.Configuration;
@@ -16,30 +17,23 @@ import java.awt.image.BufferedImage;
 
 public class WeatherImage extends PiPanel {
 
-    private WeatherData weatherData;
+    private WeatherData weatherData = null;
     private boolean update = false;
 
-    public WeatherImage(WeatherData weatherData) {
-        this.weatherData = weatherData;
-    }
-
-    public WeatherImage(int w, int h, WeatherData weatherData) {
+    public WeatherImage(int w, int h) {
         super(w, h);
-        this.weatherData = weatherData;
     }
 
     @Override
     public void draw(Graphics g) {
-//        int usex = getX() + (getW()/2);
-//        usex -= (weatherData.getIcon().getWidth()/2);
-//
-//        int usey = getY() + (getH()/2);
-//        usey -= (weatherData.getIcon().getHeight()/2);
+        if(weatherData == null){
+            return;
+        }
 
         //yes, using H here because the height is the limiter
         BufferedImage icon = loadIcon(getH(),getH());
 
-        int margin = (int)(.2*(double)getH());
+        int margin = 10;
 
         String temp = weatherData.getTemperature()+ "°";
         FontInfo fi = FontTool.fitInBox(
@@ -66,11 +60,19 @@ public class WeatherImage extends PiPanel {
         return image;
     }
 
-    public void updateAfterMinutes(int minutes){
-        if(minutes <= 0){
+    public void updateAfter(int interval, TimeUnit tu){
+        if(tu == TimeUnit.MILLISECONDS){
             pause();
         }else {
-            setRefreshInterval(250*minutes);
+            setRefreshInterval(interval,tu);
+        }
+    }
+
+    public void updateAfterMinutes(int interval){
+        if(interval <= 0){
+            pause();
+        }else {
+            setRefreshInterval(interval, TimeUnit.MINUTES);
         }
     }
 
@@ -78,11 +80,15 @@ public class WeatherImage extends PiPanel {
     @Override
     public void update() {
         WeatherAPI client = new WeatherAPI();
-        WeatherData newData = client.fakeIt();
-        newData.setTemperature(newData.getTemperature()+(i++));
-        if(!weatherData.equals(newData)){
-            weatherData.update(newData);
-            RPiInterface.wakeScreen(30000);
+        WeatherData newData = client.getWeatherNow();
+        //newData.setTemperature(newData.getTemperature()+(i++));
+        if(!newData.equals(weatherData)){
+            if(weatherData == null){
+                weatherData = newData;
+            }else {
+                weatherData.update(newData);
+            }
+            updatedPanels.add(this);
         }
     }
 

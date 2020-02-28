@@ -3,10 +3,27 @@ package realTime;
 public abstract class PiAction implements Refreshable {
 
     private ActionState state;
-    private int interval;
+    private long interval;
 
-    public PiAction(int interval) {
+    public PiAction(long interval) {
         this.interval = interval;
+    }
+
+    public PiAction(long interval, TimeUnit tu){
+        this.interval = calculateInterval(interval, tu);
+    }
+
+    protected long calculateInterval(long interval, TimeUnit tu){
+        switch (tu){
+            case HOURS:
+                interval *= 60;
+            case MINUTES:
+                interval *= 60;
+            case SECONDS:
+                interval *= 1000;
+        }
+
+        return interval;
     }
 
     public ActionState getState() {
@@ -17,7 +34,7 @@ public abstract class PiAction implements Refreshable {
         this.state = state;
     }
 
-    public int getInterval() {
+    public long getInterval() {
         return interval;
     }
 

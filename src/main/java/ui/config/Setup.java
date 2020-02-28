@@ -6,6 +6,26 @@ public class Setup {
         System.out.println();
         scripts(args);
         dimensions(args);
+        wakeScreenTime(args);
+        cycleTime(args);
+    }
+
+    private static void wakeScreenTime(String[] args){
+        String m = getArg("--wakeTime",args);
+        if(m != null) {
+            Configuration.WAKE_SCREEN_TIME = Integer.parseInt(m);
+        }
+
+        System.out.println("\tWake screen for "+(Configuration.WAKE_SCREEN_TIME/1000)+" seconds on updates.");
+    }
+
+    private static void cycleTime(String[] args){
+        String m = getArg("--cycleTime",args);
+        if(m != null) {
+            Configuration.SWAP_TIME = Integer.parseInt(m);
+        }
+
+        System.out.println("\tShow updated panels for "+(Configuration.SWAP_TIME/1000)+" seconds.");
     }
 
     private static void scripts(String[] args){
@@ -49,8 +69,6 @@ public class Setup {
         if(h!=-1){
             Configuration.HEIGHT_CONSTRAINT = h;
         }
-
-
     }
 
 

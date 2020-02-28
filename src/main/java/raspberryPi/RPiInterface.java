@@ -16,7 +16,7 @@ public class RPiInterface {
     private static final String wake_screen = "wake_screen.sh";
     private static final String sleep_screen = "sleep_screen.sh";
 
-    public static void wakeScreen(int time){
+    public static void wakeScreenTemp(int time){
         //vcgencmd display_power 0
         DoubleAction wakeScreenAction = new DoubleAction(time) {
             @Override
@@ -31,6 +31,14 @@ public class RPiInterface {
         };
 
         wakeScreenAction.deploy();
+    }
+
+    public static void wakeScreen(){
+        runScript(wake_screen);
+    }
+
+    public static void sleepScreen(){
+        runScript(sleep_screen);
     }
 
     private static Process getProcess(String scriptName){
