@@ -54,8 +54,8 @@ public class PiFrame extends JFrame implements Refreshable,ObservableContainer {
             dim = new Dimension(Configuration.WIDTH_CONSTRAINT,Configuration.HEIGHT_CONSTRAINT);
         }
 
-        setPreferredSize(new Dimension((int)dim.getWidth()+16,(int)dim.getHeight()+16));
-        setSize(new Dimension((int)dim.getWidth()+16,(int)dim.getHeight()+16));
+        setPreferredSize(new Dimension((int)dim.getWidth(),(int)dim.getHeight()));
+        setSize(new Dimension((int)dim.getWidth(),(int)dim.getHeight()));
         getContentPane().setPreferredSize(dim);
         getContentPane().setSize(dim);
     }
@@ -87,7 +87,8 @@ public class PiFrame extends JFrame implements Refreshable,ObservableContainer {
             @Override
             public void componentResized(ComponentEvent e) {
                 for(PiScreen screen: screens) {
-                    screen.reOrient(e.getComponent().getWidth(), e.getComponent().getHeight());
+                   // screen.reOrient(e.getComponent().getWidth(), e.getComponent().getHeight());
+                    screen.reOrient(getContentPane().getWidth(), getContentPane().getHeight());
                 }
             }
 

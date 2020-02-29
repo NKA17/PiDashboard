@@ -1,5 +1,6 @@
 package ui.config;
 
+import java.awt.*;
 import java.util.HashMap;
 
 public class Setup {
@@ -15,9 +16,23 @@ public class Setup {
 
         scripts(args);
         dimensions(args);
-        wakeScreenTime(args);
+        wakeScreenTime();
+        sleepAfter();
         cycleTime(args);
         print();
+        windowColor();
+        panelColor();
+        screenColor();
+        clockUseMeridian();
+        clockUseMilitary();
+    }
+
+    private static void sleepAfter(){
+        String m = getArg("--sleepAfter");
+        if(m != null) {
+            Configuration.SLEEP_AFTER_TIME = Integer.parseInt(m);
+        }
+
     }
 
     private static void print(){
@@ -29,13 +44,25 @@ public class Setup {
         System.out.println("\tPrint Statements: "+p);
     }
 
-    private static void wakeScreenTime(String[] args){
-        String m = getArg("--wakeTime",args);
+    private static void wakeScreenTime(){
+        String m = getArg("--wake");
         if(m != null) {
-            Configuration.WAKE_SCREEN_TIME = Integer.parseInt(m);
+            Configuration.WAKE = Boolean.parseBoolean(m);
         }
+    }
 
-        System.out.println("\tWake screen for "+(Configuration.WAKE_SCREEN_TIME/1000)+" seconds on updates.");
+    private static void clockUseMilitary(){
+        String m = getArg("clock.military");
+        if(m != null) {
+            Configuration.CLOCK_MILITARY = Boolean.parseBoolean(m);
+        }
+    }
+
+    private static void clockUseMeridian(){
+        String m = getArg("clock.meridian");
+        if(m != null) {
+            Configuration.CLOCK_MERIDIAN = Boolean.parseBoolean(m);
+        }
     }
 
     private static void cycleTime(String[] args){
@@ -115,5 +142,40 @@ public class Setup {
         }
 
         return false;
+    }
+
+    private static void windowColor(){
+        if(hasArg("--window_color")){
+            Configuration.WINDOW_BG_COLOR = getColor("--window_color");
+        }
+    }
+
+    private static void panelColor(){
+        if(hasArg("--panel_color")){
+            Configuration.PANEL_BG_COLOR = getColor("--panel_color");
+        }
+    }
+
+    private static void screenColor(){
+        if(hasArg("--screen_color")){
+            Configuration.SCREEN_BG_COLOR = getColor("--screen_color");
+        }
+    }
+
+    private static Color getColor(String arg){
+        String c = getArg(arg);
+        if(c == null || c.equalsIgnoreCase("null")){
+            return null;
+        }
+        String[] split = c.split(",");
+        return new Color(
+            Integer.parseInt(split[0]),
+            Integer.parseInt(split[1]),
+            Integer.parseInt(split[2])
+        );
+    }
+
+    private static boolean hasArg(String arg){
+        return configParser.containsKey(arg);
     }
 }

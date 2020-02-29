@@ -29,24 +29,30 @@ public class WeatherImage extends PiPanel {
         if(weatherData == null){
             return;
         }
+        int L = Configuration.GRIDBAG_INSETS.left;
+        int R = Configuration.GRIDBAG_INSETS.right;
+        int T = Configuration.GRIDBAG_INSETS.top;
+        int B = Configuration.GRIDBAG_INSETS.bottom;
 
-        //yes, using H here because the height is the limiter
+        //yes, using twice H here because the height is the limiter
         BufferedImage icon = loadIcon(getH(),getH());
 
         int margin = 10;
+        Rectangle textRect = new Rectangle();
+        textRect.width = getW()-icon.getWidth()-L-R;
+        textRect.height = (getH()/2)-T-B;
 
         String temp = weatherData.getTemperature()+ "°";
-        FontInfo fi = FontTool.fitInBox(
-                Configuration.TEXT_FONT,
-                temp,
-                getW()-icon.getWidth()-margin,
-                icon.getHeight());
+        String wind = "wind "+weatherData.getWindSpeed().replaceAll("\\D","");
 
-        Graphics2D g2 = (Graphics2D)g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setFont(fi.getFont());
-        g2.setColor(Configuration.TEXT_COLOR);
-        g2.drawString(temp,getX()+icon.getWidth()+margin,getY()+icon.getHeight()-margin);
+        FontInfo tempFont = FontTool.fitInBox(Configuration.TEXT_FONT,temp,textRect.width,textRect.height);
+        FontInfo windFont = FontTool.fitInBox(Configuration.TEXT_FONT,wind,textRect.width,textRect.height);
+
+        g.setColor(Configuration.TEXT_COLOR);
+        g.setFont(tempFont.getFont());
+        FontTool.drawAAString(g,temp,getX()+icon.getWidth()+L,getY()+T);
+        g.setFont(windFont.getFont());
+        FontTool.drawAAString(g,wind,getX()+icon.getWidth()+L,getY()+T+B+T+textRect.height);
 
         g.drawImage(icon,getX(),getY(),null);
     }

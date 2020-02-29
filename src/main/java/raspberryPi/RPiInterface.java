@@ -21,12 +21,12 @@ public class RPiInterface {
         DoubleAction wakeScreenAction = new DoubleAction(time) {
             @Override
             public void open() {
-                runScript(wake_screen);
+                wakeScreen();
             }
 
             @Override
             public void close() {
-                runScript(sleep_screen);
+                sleepScreen();
             }
         };
 
@@ -34,10 +34,12 @@ public class RPiInterface {
     }
 
     public static void wakeScreen(){
+        //Configuration.SCREEN_BG_COLOR = Configuration.PANEL_BG_COLOR;
         runScript(wake_screen);
     }
 
     public static void sleepScreen(){
+        //Configuration.SCREEN_BG_COLOR = Configuration.WINDOW_BG_COLOR;
         runScript(sleep_screen);
     }
 

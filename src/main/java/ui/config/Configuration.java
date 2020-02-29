@@ -5,7 +5,8 @@ import java.awt.*;
 public class Configuration {
     public static boolean PRINT = true;
 
-    public static int WAKE_SCREEN_TIME = 40000;
+    public static int SLEEP_AFTER_TIME = 40000;
+    public static boolean WAKE = true;
     public static int SWAP_TIME = 30000;
     public static String SCRIPT_LOCATION = "NOT SUPPLIED!";
     public static int WIDTH_CONSTRAINT = -1;
@@ -15,7 +16,12 @@ public class Configuration {
 
     public static Color WINDOW_BG_COLOR = new Color(30,20,40);
     public static Color PANEL_BG_COLOR = new Color(60,60,80);
+    public static Color SCREEN_BG_COLOR = new Color(60,60,80);
 
     public static Color TEXT_COLOR = new Color(220,220,220);
     public static final Font TEXT_FONT = new Font("Yu Gothic UI",Font.BOLD,20);
+
+    public static boolean CLOCK_MERIDIAN = false;
+    public static boolean CLOCK_MILITARY = false;
+
 }

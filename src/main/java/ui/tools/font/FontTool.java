@@ -1,21 +1,41 @@
 package ui.tools.font;
 
+import org.w3c.dom.css.Rect;
+
 import java.awt.*;
 import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 public class FontTool {
 
-    public static FontInfo fitInBox(Font f, String text, int boxW, int boxH){
-        return fitInBox(f,text,boxW,boxH,0,0);
+    public static FontInfo fitInBox(Font font, String text, int boxW, int boxH){
+        float fontSize = 20.0f;
+
+        font = font.deriveFont(fontSize);
+        Rectangle rect = getStringBounds(font, text);
+        fontSize = (float) (boxW / rect.getWidth() ) * fontSize;
+
+        font = font.deriveFont(fontSize);
+        rect = getStringBounds(font,text);
+
+        if(rect.getHeight() > boxH){
+            fontSize = (float) (boxH / rect.getHeight()) * fontSize;
+            font = font.deriveFont(fontSize);
+            rect = getStringBounds(font,text);
+        }
+
+        FontInfo fontInfo = new FontInfo();
+        fontInfo.setFont(font);
+        fontInfo.setW(rect.width);
+        fontInfo.setH(rect.height);
+
+        return fontInfo;
     }
 
-    public static FontInfo fitInBox(Font f, String text, int boxW, int boxH, int xMargin, int yMargin){
-        return fitInBox(f,text,boxW,boxH,xMargin,xMargin,yMargin,yMargin);
-    }
 
-    public static FontInfo fitInBox(Font f, String text, int boxW, int boxH, int leftMargin, int rightMargin, int topMargin, int bottomMargin){
+    public static FontInfo fitInBox2(Font f, String text, int boxW, int boxH, int leftMargin, int rightMargin, int topMargin, int bottomMargin){
         AffineTransform affinetransform = new AffineTransform();
         FontRenderContext frc = new FontRenderContext(affinetransform,false,false);
 
@@ -30,7 +50,7 @@ public class FontTool {
         while(true) {
             fSize++;
             font = new Font(f.getFontName(),f.getStyle(),fSize);
-            Rectangle2D rect = font.getStringBounds(text, frc);
+            Rectangle2D rect = getStringBounds(font, text);
             if(!((rect.getWidth() <= w || w <= 0) && (rect.getHeight() <= h || h <= 0))) {
                 fSize--;
                 font = new Font(f.getFontName(),f.getStyle(),fSize);
@@ -49,15 +69,28 @@ public class FontTool {
     }
 
     public static FontInfo getBounds(Font font, String text){
-        AffineTransform affinetransform = new AffineTransform();
-        FontRenderContext frc = new FontRenderContext(affinetransform,true,true);
-        Rectangle2D rect = font.getStringBounds(text, frc);
+        Rectangle rect = getStringBounds(font,text);
 
         FontInfo fontInfo = new FontInfo();
         fontInfo.setFont(font);
         fontInfo.setW((int)rect.getWidth());
-        fontInfo.setH((int)rect.getHeight());
+        fontInfo.setH((int)(rect.getHeight()));
 
         return fontInfo;
+    }
+
+    private static Rectangle getStringBounds(Font font, String str)
+    {
+        AffineTransform affinetransform = new AffineTransform();
+        FontRenderContext frc = new FontRenderContext(affinetransform,true,true);
+        GlyphVector gv = font.createGlyphVector(frc, str);
+        return gv.getPixelBounds(null, 0,0);
+    }
+
+    public static void drawAAString(Graphics g, String text, int x, int y){
+        Rectangle rect = getStringBounds(g.getFont(),text);
+        Graphics2D g2 = (Graphics2D)g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.drawString(text,x,y+rect.height);
     }
 }

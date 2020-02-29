@@ -79,10 +79,15 @@ public class ScreenOrganizer {
         dn.oldh = panel.getH();
 
         double dh = (double) h / (double) panel.getH();
+        double dw = dh;
         dn.dh = dh;
 
-        w = Math.min(screen.getW(),(int) ((double) panel.getW() * dh));
         panel.reOrient((int) ((double) panel.getW() * dh), h);
+
+        if(panel.getW() > w){
+            dw = (double) w / (double) panel.getW();
+            panel.reOrient((int) ((double) panel.getW() * dw), (int)((double) panel.getH() * dw));
+        }
 
         dn.neww = panel.getW();
         dn.newh = panel.getH();

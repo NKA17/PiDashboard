@@ -3,6 +3,12 @@
 --width=
 --scripts=
 --cycleTime=
---wakeTime=-1
+--wake=true
+--sleepAfter=-1
 --images=
 --print=false
+--window_color=
+--screen_color=
+--panel_color=
+clock.meridian=false
+clock.military=false

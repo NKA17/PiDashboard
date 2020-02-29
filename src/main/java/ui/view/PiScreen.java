@@ -58,14 +58,14 @@ public class PiScreen extends PiPanel {
         BufferedImage screenImage = new BufferedImage(getW(), getH(), BufferedImage.TYPE_4BYTE_ABGR);
         Graphics screen = screenImage.getGraphics();
 
-        screen.setColor(getBackground());
+        screen.setColor(Configuration.SCREEN_BG_COLOR);
         screen.fillRect(0,0, getW(), getH());
 
         try {
             for (PiPanel p : panels) {
                 p.draw(screen);
-                //screen.setColor(Color.CYAN);
-                //screen.drawRect(p.getX(),p.getY(),p.getW(),p.getH());
+                //screen.setColor(Color.RED);
+                //screen.drawRect(p.getX(),p.getY(),p.getW()-1,p.getH()-1);
             }
         }catch (ConcurrentModificationException e){
             //well shoot.
@@ -92,8 +92,8 @@ public class PiScreen extends PiPanel {
         RPiInterface.wakeScreen();
 
         if(updatedPanels.isEmpty()){
-            if(Configuration.WAKE_SCREEN_TIME != -1) {
-                DelayedAction action = new DelayedAction(Configuration.WAKE_SCREEN_TIME) {
+            if(Configuration.SLEEP_AFTER_TIME != -1) {
+                DelayedAction action = new DelayedAction(Configuration.SLEEP_AFTER_TIME) {
                     @Override
                     public void action() {
                         if(PiPanel.updatedPanels.isEmpty()) {

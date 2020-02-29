@@ -25,20 +25,16 @@ public class Startup {
 
         PiFrame pf = new PiFrame();
 
-        PiScreen clockScreen = pf.createScreen(pf.getContentPane().getWidth(),pf.getContentPane().getHeight()-20);
+        PiScreen clockScreen = pf.createScreen(pf.getContentPane().getWidth(),pf.getContentPane().getHeight());
         Clock clock = new Clock(clockScreen.getW(),clockScreen.getH());
-        clock.setUseMeridean(false);
         clockScreen.addPiPanel(clock);
 
         ScreenOrganizer organizer = new ScreenOrganizer();
         organizer.setMainPanel(clock);
         clockScreen.setOrganizer(organizer);
 
-        Clock c = new Clock(100,60);
-        c.setX(200);
-        //clockScreen.addPiPanel(c);
 
-        WeatherImage weatherImage = new WeatherImage(150,60);
+        WeatherImage weatherImage = new WeatherImage(120,60);
         weatherImage.updateAfter(1, TimeUnit.MINUTES);
         clockScreen.addPiPanel(weatherImage);
 
