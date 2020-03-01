@@ -1,0 +1,3 @@
+#!/bin/sh
+
+ping google.com

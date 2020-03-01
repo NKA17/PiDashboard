@@ -1,5 +1,8 @@
 package thirdparty;
 
+import raspberryPi.RPiInterface;
+import ui.config.Configuration;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -34,20 +37,34 @@ public class ApiClient {
         return requestUrl;
     }
 
-    public BufferedImage getImage(String path){
+    public BufferedImage getImage(String path) throws IOException{
         try {
+            if(Configuration.CHECK_INTERNET){
+                boolean connected = RPiInterface.checkInternetConnection();
+                if(!connected){
+                    throw new IOException("No internet connection.");
+                }
+            }
             path = cleanURL(path);
             URL url = new URL(path);
             BufferedImage img = ImageIO.read(url);
             return img;
+        }catch (IOException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             return null;
         }
     }
 
-    public String makeRequest(String endPoint){
+    public String makeRequest(String endPoint) throws IOException{
         try{
+            if(Configuration.CHECK_INTERNET){
+                boolean connected = RPiInterface.checkInternetConnection();
+                if(!connected){
+                    throw new IOException("No internet connection.");
+                }
+            }
 
             String requestUrl = cleanURL(endPoint);
 
@@ -75,14 +92,12 @@ public class ApiClient {
             conn.disconnect();
             return jsonstr;
 
-        } catch (MalformedURLException e) {
+        }catch (MalformedURLException e) {
 
             e.printStackTrace();
 
         } catch (IOException e) {
-
-            e.printStackTrace();
-
+            throw e;
         }
         return "{}";
     }

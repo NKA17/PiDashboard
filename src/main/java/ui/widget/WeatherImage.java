@@ -87,6 +87,10 @@ public class WeatherImage extends PiPanel {
     public void update() {
         WeatherAPI client = new WeatherAPI();
         WeatherData newData = client.getWeatherNow();
+        if(newData == null){
+            return;
+        }
+
         //newData.setTemperature(newData.getTemperature()+(i++));
         if(!newData.equals(weatherData)){
             if(weatherData == null){

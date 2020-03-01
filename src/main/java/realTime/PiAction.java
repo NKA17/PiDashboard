@@ -43,6 +43,7 @@ public abstract class PiAction implements Refreshable {
     }
 
     public void deploy(){
+        setState(ActionState.OPEN);
         Ticker ticker = new Ticker(interval,this);
         Thread th = new Thread(ticker);
         th.start();

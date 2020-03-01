@@ -24,6 +24,7 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
     private boolean allowReorganize = true;
 
     public PiPanel(){
+        this(100,30);
         setup();
     }
 

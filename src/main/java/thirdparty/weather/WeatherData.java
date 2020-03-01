@@ -2,6 +2,7 @@ package thirdparty.weather;
 
 import thirdparty.ApiClient;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class WeatherData {
@@ -10,6 +11,7 @@ public class WeatherData {
     private String windSpeed = "";
     private String windDirection = "";
     private String iconURL = "";
+    private boolean goodData = true;
     private BufferedImage icon = null;
 
     public String getIconURL() {
@@ -23,7 +25,13 @@ public class WeatherData {
     public BufferedImage getIcon() {
         if(icon == null){
             ApiClient client = new ApiClient(getIconURL());
-            icon = client.getImage("");
+            try {
+                icon = client.getImage("");
+            }catch (Exception e){
+                icon = new BufferedImage(50,50,BufferedImage.TYPE_4BYTE_ABGR);
+                icon.getGraphics().setColor(new Color(30,30,30));
+                icon.getGraphics().fillRect(0,0,50,50);
+            }
         }
         return icon;
     }
@@ -85,6 +93,14 @@ public class WeatherData {
         setWindSpeed(wd.getWindSpeed());
         setWindDirection(wd.getWindDirection());
         setTemperature(wd.getTemperature());
+    }
+
+    public boolean isGoodData() {
+        return goodData;
+    }
+
+    public void setGoodData(boolean goodData) {
+        this.goodData = goodData;
     }
 
     /*

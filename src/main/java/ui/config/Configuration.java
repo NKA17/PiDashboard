@@ -1,14 +1,26 @@
 package ui.config;
 
+import thirdparty.location.LocationData;
+
 import java.awt.*;
 
 public class Configuration {
-    public static boolean PRINT = true;
+
+    public static boolean CONNTECTED_TO_INTERNET = true;
+    public static boolean CHECK_INTERNET = false;
+
+    public static boolean PRINT = false;
+    public static String LOCATION_PUBLIC_IP = null;
+    public static String LOCATION_LOCAL_IP = null;
+    public static String LOCATION_LONGITUDE = null;
+    public static String LOCATION_LATITUDE = null;
+    public static LocationData LOCATION_DATA = null;
 
     public static int SLEEP_AFTER_TIME = 40000;
     public static boolean WAKE = true;
     public static int SWAP_TIME = 30000;
-    public static String SCRIPT_LOCATION = "NOT SUPPLIED!";
+    public static String SCRIPT_LOCATION = "";
+    public static String IMAGE_LOCATION = "";
     public static int WIDTH_CONSTRAINT = -1;
     public static int HEIGHT_CONSTRAINT = -1;
 

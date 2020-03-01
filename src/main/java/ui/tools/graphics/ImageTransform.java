@@ -1,5 +1,7 @@
 package ui.tools.graphics;
 
+import enums.Axis;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -13,5 +15,20 @@ public class ImageTransform {
         g2d.dispose();
 
         return dimg;
+    }
+
+    public static BufferedImage resize(BufferedImage img, int s, Axis axis){
+        int w = img.getWidth();
+        int h = img.getHeight();
+        double scale;
+        if(axis == Axis.HORIZONTAL){
+            scale = ((double)h / (double)s);
+        }else {
+            scale = ((double)w / (double)s);
+        }
+
+        w = (int)((double)w * scale);
+        h = (int)((double)h * scale);
+        return resize(img,w,h);
     }
 }

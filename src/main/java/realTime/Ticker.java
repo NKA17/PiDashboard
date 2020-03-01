@@ -37,8 +37,12 @@ public class Ticker implements Runnable {
             long start = System.currentTimeMillis();
             while(System.currentTimeMillis() - start < interval);
 
+            //if(m>0)
             //System.out.println("Ticker "+m);
             refreshable.refresh();
         }
+
+
+        //System.out.println("Ticker "+m+" died.");
     }
 }

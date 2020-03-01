@@ -15,6 +15,8 @@ import java.util.List;
 public class PiScreen extends PiPanel {
 
     private List<PiPanel> panels = new ArrayList<>();
+    private List<PiPanel> footers = new ArrayList<>();
+    private List<PiPanel> hiddenPanels = new ArrayList<>();
     private double dw = 1;
     private double dh = 1;
     private ScreenOrganizer organizer;
@@ -67,6 +69,11 @@ public class PiScreen extends PiPanel {
                 //screen.setColor(Color.RED);
                 //screen.drawRect(p.getX(),p.getY(),p.getW()-1,p.getH()-1);
             }
+            for(PiPanel p: footers){
+                p.draw(screen);
+                //screen.setColor(Color.RED);
+                //screen.drawRect(p.getX(),p.getY(),p.getW()-1,p.getH()-1);
+            }
         }catch (ConcurrentModificationException e){
             //well shoot.
         }
@@ -76,7 +83,13 @@ public class PiScreen extends PiPanel {
 
     @Override
     public void update() {
+        for(PiPanel pp: hiddenPanels){
+            pp.refresh();
+        }
         for(PiPanel pp: panels){
+            pp.refresh();
+        }
+        for(PiPanel pp: footers){
             pp.refresh();
         }
         if(!updatedPanels.isEmpty()){
@@ -84,7 +97,14 @@ public class PiScreen extends PiPanel {
         }
     }
 
+    private long lastEmptied = System.currentTimeMillis();
     private void emptyQueue(){
+        if(System.currentTimeMillis() - lastEmptied < Configuration.SWAP_TIME){
+            return;
+        }
+
+        lastEmptied = System.currentTimeMillis();
+
         PiPanel panel = updatedPanels.poll();
         if(organizer != null){
             organizer.focus(panel);
@@ -103,20 +123,81 @@ public class PiScreen extends PiPanel {
                 };
                 action.deploy();
             }
-        }else{
-            DelayedAction action = new DelayedAction(Configuration.SWAP_TIME) {
-                @Override
-                public void action() {
-                    emptyQueue();
-                }
-            };
-            action.deploy();
+            if(Configuration.SWAP_TIME != -1){
+                DelayedAction action = new DelayedAction(Configuration.SWAP_TIME) {
+                    @Override
+                    public void action() {
+                        organizer.reset();
+                    }
+                };
+                action.deploy();
+            }
         }
+//        else{
+//            DelayedAction action = new DelayedAction(Configuration.SWAP_TIME) {
+//                @Override
+//                public void action() {
+//                    emptyQueue();
+//                }
+//            };
+//            action.deploy();
+//        }
     }
 
     public void addPiPanel(PiPanel panel){
         getPanels().add(panel);
         panel.setObserver(this);
+        if(organizer != null){
+            organizer.update();
+        }
+    }
+
+    public void removePiPanel(PiPanel panel){
+        getPanels().remove(panel);
+        panel.setObserver(null);
+        if(organizer != null){
+            organizer.update();
+        }
+    }
+
+    public void addFooterPanel(PiPanel panel){
+        getFooters().add(panel);
+        panel.setObserver(this);
+        if(organizer != null){
+            organizer.update();
+        }
+    }
+
+    public void removeFooterPanel(PiPanel panel){
+        getFooters().remove(panel);
+        panel.setObserver(null);
+        if(organizer != null){
+            organizer.update();
+        }
+    }
+
+    public void addHiddenPanel(PiPanel panel){
+        getHiddenPanels().add(panel);
+        panel.setObserver(this);
+        if(organizer != null){
+            organizer.update();
+        }
+    }
+
+    public List<PiPanel> getFooters() {
+        return footers;
+    }
+
+    public void setFooters(List<PiPanel> footers) {
+        this.footers = footers;
+    }
+
+    public List<PiPanel> getHiddenPanels() {
+        return hiddenPanels;
+    }
+
+    public void setHiddenPanels(List<PiPanel> hiddenPanels) {
+        this.hiddenPanels = hiddenPanels;
     }
 
     @Override
@@ -130,6 +211,9 @@ public class PiScreen extends PiPanel {
 
         super.reOrient((int)(dw*newW),(int)(dh*newH));
         for(PiPanel pp: panels){
+            pp.reOrient(oldW,getW(),oldH,getH());
+        }
+        for(PiPanel pp: footers){
             pp.reOrient(oldW,getW(),oldH,getH());
         }
     }

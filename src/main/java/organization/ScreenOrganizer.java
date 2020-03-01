@@ -2,19 +2,44 @@ package organization;
 
 import raspberryPi.RPiInterface;
 import realTime.DelayedAction;
+import ui.config.Configuration;
 import ui.view.PiPanel;
 import ui.view.PiScreen;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ScreenOrganizer {
     private PiScreen screen;
-    private double barRatio = .2;
+    private double barRatio = .16;
     private PiPanel main = null;
+    private PiPanel currentFocus = null;
+    private boolean needToRemoveFromScreenPanels = false;
+    private HashMap<PiPanel,Dimension> dimMap = new HashMap();
 
     public ScreenOrganizer() {
 
+    }
+
+    public void update(){
+        List<PiPanel> panels = new ArrayList<>();
+        panels.addAll(screen.getPanels());
+        panels.addAll(screen.getHiddenPanels());
+        panels.addAll(screen.getFooters());
+        for(PiPanel p: panels){
+            if(!dimMap.containsKey(p)){
+                dimMap.put(p,new Dimension(p.getW(),p.getH()));
+            }
+        }
+
+        if(main == null){
+            focus(screen.getPanels().get(0));
+        }else {
+            focus(main);
+        }
+        fitFooters();
     }
 
     public PiPanel getMainPanel() {
@@ -34,11 +59,16 @@ public class ScreenOrganizer {
     }
 
     public void focus(PiPanel panel){
-        if(!screen.getPanels().contains(panel))return;
 
         int x = 0;
         int y = 0;
         int biggestH = 0;
+
+        int barSize = (int)((double)screen.getH() * barRatio);
+        int provisionalWidth = screen.getW();
+        int provisionalHeight = screen.getFooters().size() > 0
+                ? screen.getH() - barSize
+                : screen.getH();
 
         for(int i = 0; i < screen.getPanels().size(); i++){
             PiPanel p = screen.getPanels().get(i);
@@ -47,7 +77,7 @@ public class ScreenOrganizer {
             p.setX(x);
             p.setY(y);
 
-            DimensionNotes dim = fit(p,screen.getW(),(int)(barRatio*(double)screen.getH()));
+            DimensionNotes dim = fit(p,provisionalWidth,barSize);
             p.setW(dim.neww);
             p.setH(dim.newh);
 
@@ -56,24 +86,40 @@ public class ScreenOrganizer {
         }
 
         PiPanel p = panel;
-        DimensionNotes dim = fit(p,screen.getW(),(int)((1-barRatio)*(double)screen.getH()));
+        DimensionNotes dim = fit(p,provisionalWidth,provisionalHeight-barSize);
         p.setX(0);
-        p.setY(biggestH);
-        p.setW(dim.neww);
-        p.setH(dim.newh);
+        p.setY(biggestH+Configuration.GRIDBAG_INSETS.top);
+        p.setW(screen.getW());
+        p.setH(dim.newh-Configuration.GRIDBAG_INSETS.top-Configuration.GRIDBAG_INSETS.bottom);
 
-        if(main != null && panel != main){
-            DelayedAction action = new DelayedAction(30000) {
-                @Override
-                public void action() {
-                    focus(main);
-                }
-            };
-            action.deploy();
+        if(needToRemoveFromScreenPanels){
+            screen.getPanels().remove(currentFocus);
+        }
+
+        boolean isHidden = screen.getHiddenPanels().contains(panel);
+        needToRemoveFromScreenPanels = !screen.getPanels().contains(panel);
+        if(isHidden){
+            screen.getPanels().add(panel);
+        }
+        currentFocus = panel;
+
+        fitFooters();
+    }
+
+    public void reset(){
+        if(main != null){
+            focus(main);
         }
     }
 
     private DimensionNotes fit(PiPanel panel, int w, int h){
+        if(!dimMap.containsKey(panel)){
+            dimMap.put(panel,new Dimension(panel.getW(),panel.getH()));
+        }
+
+        panel.setW(dimMap.get(panel).getWidth());
+        panel.setH(dimMap.get(panel).getHeight());
+
         DimensionNotes dn = new DimensionNotes();
         dn.oldw = panel.getW();
         dn.oldh = panel.getH();
@@ -93,6 +139,28 @@ public class ScreenOrganizer {
         dn.newh = panel.getH();
 
         return dn;
+    }
+
+    private void fitFooters(){
+        int barSize = (int)((double)screen.getH() * barRatio);
+        int x = 0;
+        int y = (int)((double)screen.getH()*(1-barRatio));
+        for(int i = 0; i < screen.getFooters().size(); i++){
+            PiPanel p = screen.getFooters().get(i);
+
+            if(p == currentFocus){
+                continue;
+            }
+
+            p.setX(x);
+            p.setY(y);
+
+            DimensionNotes dim = fit(p,screen.getW(),barSize);
+            p.setW(dim.neww);
+            p.setH(dim.newh);
+
+            x += p.getW();
+        }
     }
 
     private class DimensionNotes{

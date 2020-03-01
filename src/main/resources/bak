@@ -2,13 +2,11 @@
 --height=
 --width=
 --scripts=
---cycleTime=
+--cycleTime=15000
 --wake=true
 --sleepAfter=-1
---images=
+--images=aaaaaaa
 --print=false
 --window_color=
 --screen_color=
 --panel_color=
-clock.meridian=false
-clock.military=false

@@ -1,7 +1,6 @@
 package ui.config;
 
 import java.awt.*;
-import java.util.HashMap;
 
 public class Setup {
 
@@ -15,6 +14,7 @@ public class Setup {
                 : new ConfigParser(args);
 
         scripts(args);
+        images(args);
         dimensions(args);
         wakeScreenTime();
         sleepAfter();
@@ -25,10 +25,42 @@ public class Setup {
         screenColor();
         clockUseMeridian();
         clockUseMilitary();
+        checkInternet();
+        ip();
+        localIP();
+        longitude();
+        latitude();
+    }
+
+    private static void longitude(){
+        String m = getArg("--location.longitude");
+        if(m != null) {
+            Configuration.LOCATION_LONGITUDE = m;
+        }
+    }
+    private static void latitude(){
+        String m = getArg("--location.latitude");
+        if(m != null) {
+            Configuration.LOCATION_LATITUDE = m;
+        }
+    }
+
+    private static void ip(){
+        String m = getArg("--location.ip");
+        if(m != null) {
+            Configuration.LOCATION_PUBLIC_IP = m;
+        }
+    }
+
+    private static void localIP(){
+        String m = getArg("--location.local_ip");
+        if(m != null) {
+            Configuration.LOCATION_LOCAL_IP = m;
+        }
     }
 
     private static void sleepAfter(){
-        String m = getArg("--sleepAfter");
+        String m = getArg("--time.sleepAfter");
         if(m != null) {
             Configuration.SLEEP_AFTER_TIME = Integer.parseInt(m);
         }
@@ -36,16 +68,16 @@ public class Setup {
     }
 
     private static void print(){
-        String p = getArg("--print");
+        String p = getArg("--out.print");
         if(p != null){
             Configuration.PRINT = Boolean.parseBoolean(p);
         }
 
-        System.out.println("\tPrint Statements: "+p);
+        System.out.println("\tPrint Statements: "+Configuration.PRINT);
     }
 
     private static void wakeScreenTime(){
-        String m = getArg("--wake");
+        String m = getArg("--time.wake");
         if(m != null) {
             Configuration.WAKE = Boolean.parseBoolean(m);
         }
@@ -65,8 +97,15 @@ public class Setup {
         }
     }
 
+    private static void checkInternet(){
+        String m = getArg("--check.internet");
+        if(m != null) {
+            Configuration.CHECK_INTERNET = Boolean.parseBoolean(m);
+        }
+    }
+
     private static void cycleTime(String[] args){
-        String m = getArg("--cycleTime",args);
+        String m = getArg("--time.cycleTime",args);
         if(m != null) {
             Configuration.SWAP_TIME = Integer.parseInt(m);
         }
@@ -75,10 +114,24 @@ public class Setup {
     }
 
     private static void scripts(String[] args){
-        String scripts = getArg("--scripts",args);
-        Configuration.SCRIPT_LOCATION = scripts;
+        String scripts = getArg("--path.scripts",args);
+
+        if(scripts != null) {
+            Configuration.SCRIPT_LOCATION = scripts;
+        }
 
         System.out.println("\tScripts Location: "+Configuration.SCRIPT_LOCATION);
+    }
+
+    private static void images(String[] args){
+        String images = getArg("--path.images");
+
+        if(images != null){
+            Configuration.IMAGE_LOCATION = images;
+        }
+
+
+        System.out.println("\tImages Location: "+Configuration.IMAGE_LOCATION);
     }
 
     private static void dimensions(String[] args){
@@ -93,8 +146,8 @@ public class Setup {
             h = Integer.parseInt(dims[1]);
         }
 
-        String width = getArg("--width",args);
-        String height = getArg("--height",args);
+        String width = getArg("--dim.width",args);
+        String height = getArg("--dim.height",args);
 
         if(width!=null){
             w = Integer.parseInt(width);
@@ -145,20 +198,20 @@ public class Setup {
     }
 
     private static void windowColor(){
-        if(hasArg("--window_color")){
-            Configuration.WINDOW_BG_COLOR = getColor("--window_color");
+        if(hasArg("--color.window")){
+            Configuration.WINDOW_BG_COLOR = getColor("--color.window");
         }
     }
 
     private static void panelColor(){
-        if(hasArg("--panel_color")){
-            Configuration.PANEL_BG_COLOR = getColor("--panel_color");
+        if(hasArg("--color.panel")){
+            Configuration.PANEL_BG_COLOR = getColor("--color.panel");
         }
     }
 
     private static void screenColor(){
-        if(hasArg("--screen_color")){
-            Configuration.SCREEN_BG_COLOR = getColor("--screen_color");
+        if(hasArg("--color.screen")){
+            Configuration.SCREEN_BG_COLOR = getColor("--color.screen");
         }
     }
 
