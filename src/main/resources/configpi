@@ -16,7 +16,7 @@
 --location.longitude=
 --out.print=true
 --path.images=C:\Users\Nate\IdeaProjects\PiDashboard\out\artifacts\PiDashboard_jar\images\
---path.scripts=C:\Users\Nate\IdeaProjects\PiDashboard\src\main\resources\scripts
+--path.scripts=
 --time.cycleTime=5000
 --time.sleepAfter=
 --time.wake=

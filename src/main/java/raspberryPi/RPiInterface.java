@@ -61,8 +61,17 @@ public class RPiInterface {
         }
     }
 
+
+    private static String getLocalIpWindows(){
+        return "192.168.0.10";
+    }
+
     public static String getLocalIpAddress(){
         try {
+            if(windows()){
+                return getLocalIpWindows();
+            }
+
             BufferedReader reader = getProcessInput(get_local_ip_address);
             if(reader == null){
                 return null;
@@ -76,6 +85,7 @@ public class RPiInterface {
                     return m.toMatchResult().group(1);
                 }
             }
+            reader.close();
             return null;
         }catch (Exception e){
             e.printStackTrace();
@@ -110,6 +120,7 @@ public class RPiInterface {
                     return bytes > 0;
                 }
             }
+            reader.close();
             return false;
         }catch (Exception e){
             e.printStackTrace();
@@ -130,13 +141,13 @@ public class RPiInterface {
             if(reader == null){
                 return false;
             }
-            Pattern p = Pattern.compile("(?i)Reply From");
+            Pattern good = Pattern.compile("((?i)Reply From)|(Request timed out.)");
+            Pattern bad = Pattern.compile("(?i)request could not find host");
             String line;
             while ((line = reader.readLine()) != null) {
-                Matcher m = p.matcher(line);
-                if(m.find())
+                if(good.matcher(line).find())
                     return true;
-                if(line.matches("Request timed out."))
+                if(bad.matcher(line).find())
                     return false;
             }
             reader.close();
@@ -148,6 +159,16 @@ public class RPiInterface {
         }
     }
 
+    public static String windowsGetPublicIpAddress(){
+        try{
+            //curl http://myexternalip.com/raw
+            Process process = Runtime.getRuntime().exec("nslookup myip.opendns.com. resolver1.opendns.com");
+            return "166.181.86.119";
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
     public static String getPublicIpAddress(){
         try {
             BufferedReader reader = getProcessInput(get_public_ip_address);
@@ -163,6 +184,7 @@ public class RPiInterface {
                     return m.toMatchResult().group(1);
                 }
             }
+            reader.close();
             return null;
         }catch (Exception e){
             e.printStackTrace();
@@ -233,6 +255,8 @@ public class RPiInterface {
 
     //Process statuses
     //https://www.liquidweb.com/kb/linux-process-statuses/
+
+    //show thread $ ps H
 
     private static boolean windows(){
         return System.getProperty("os.name").contains("Windows");

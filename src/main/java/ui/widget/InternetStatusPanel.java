@@ -45,13 +45,13 @@ public class InternetStatusPanel extends PiPanel {
             PiPanel.updatedPanels.add(this);
         }
 
-        internetStatus = newStatus;
         if(newStatus != internetStatus && newStatus && statusTurnedGoodAction != null){
             statusTurnedGoodAction.deploy();
         }
         if(newStatus != internetStatus && !newStatus && statusTurnedBadAction != null){
             statusTurnedBadAction.deploy();
         }
+        internetStatus = newStatus;
 
         if(extendedAction != null){
             extendedAction.deploy();

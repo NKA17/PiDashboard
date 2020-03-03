@@ -36,6 +36,7 @@ public class Startup {
             @Override
             public void action() {
                 clockScreen.removeFooterPanel(isp);
+                RPiInterface.getLocalIpAddress();
             }
         };
         ImmediateAction badAction = new ImmediateAction() {

@@ -1,5 +1,8 @@
 package ui.widget;
 
+import enums.Axis;
+import graphics.ImageCache;
+import graphics.sprites.SpriteSheet;
 import raspberryPi.RPiInterface;
 import realTime.Refreshable;
 import realTime.Ticker;
@@ -14,6 +17,7 @@ import ui.view.PiPanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 
 public class WeatherImage extends PiPanel {
 
@@ -62,7 +66,6 @@ public class WeatherImage extends PiPanel {
         if(image.getWidth() != w || image.getHeight() != h){
             image = ImageTransform.resize(image,w,h);
         }
-
         return image;
     }
 

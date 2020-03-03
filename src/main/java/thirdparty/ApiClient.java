@@ -90,6 +90,7 @@ public class ApiClient {
             }
 
             conn.disconnect();
+            br.close();
             return jsonstr;
 
         }catch (MalformedURLException e) {

@@ -9,7 +9,7 @@ public class SpriteSheet {
     private int height;
     private BufferedImage spriteSheet;
     private int totalFrames;
-    private Axis direction;
+    private Axis direction = Axis.HORIZONTAL;
     private int frame = 0;
 
     public SpriteSheet(BufferedImage spriteSheet, int width, int height, int totalFrames, Axis direction) {
@@ -31,6 +31,7 @@ public class SpriteSheet {
         this.width = width;
         this.height = height;
         this.spriteSheet = spriteSheet;
+        totalFrames = (spriteSheet.getWidth() / width) * (spriteSheet.getHeight() / height);
     }
 
     public BufferedImage next(){
@@ -41,14 +42,14 @@ public class SpriteSheet {
 
         if(direction == Axis.HORIZONTAL){
             x = (frame % xFrames) * width;
-            y = (frame / yFrames) * height;
+            y = ((frame / xFrames) * height);
         }else {
-            x = (frame / xFrames) * width;
+            x = ((frame / yFrames) * width);
             y = (frame % yFrames) * height;
         }
 
         frame++;
-        if(frame > totalFrames){
+        if(frame >= totalFrames){
             frame = 0;
         }
 
