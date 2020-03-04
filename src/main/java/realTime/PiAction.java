@@ -1,9 +1,12 @@
 package realTime;
 
+import raspberryPi.Printer;
+
 public abstract class PiAction implements Refreshable {
 
     private ActionState state;
     private long interval;
+    private String description = null;
 
     public PiAction(long interval) {
         this.interval = interval;
@@ -52,5 +55,19 @@ public abstract class PiAction implements Refreshable {
     @Override
     public boolean isPowered() {
         return state != ActionState.KILL;
+    }
+
+    public String toString(){
+        return description != null
+                ? getClass().getName()+" - "+description
+                : getClass().getName();
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

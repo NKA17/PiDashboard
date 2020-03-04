@@ -1,8 +1,7 @@
 package organization;
 
-import raspberryPi.RPiInterface;
-import realTime.DelayedAction;
-import ui.config.Configuration;
+import config.Configuration;
+import raspberryPi.Printer;
 import ui.view.PiPanel;
 import ui.view.PiScreen;
 
@@ -102,6 +101,7 @@ public class ScreenOrganizer {
             screen.getPanels().add(panel);
         }
         currentFocus = panel;
+        Printer.println("(Organizer) Focusing on {%s}",panel.toString());
 
         fitFooters();
     }

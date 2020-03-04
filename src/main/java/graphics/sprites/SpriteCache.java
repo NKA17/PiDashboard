@@ -1,13 +1,5 @@
 package graphics.sprites;
 
-import enums.Axis;
-import ui.config.Configuration;
-import ui.tools.graphics.ImageTransform;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.HashMap;
 
 public class SpriteCache {

@@ -1,10 +1,14 @@
-package ui.config;
+package config;
 
 import thirdparty.location.LocationData;
 
 import java.awt.*;
 
 public class Configuration {
+
+    public static boolean LOGGING = false;
+    public static String LOGGING_PATH = "";
+    public static String LOGGING_FILE_FORMAT = "log";
 
     public static boolean CONNTECTED_TO_INTERNET = true;
     public static boolean CHECK_INTERNET = false;

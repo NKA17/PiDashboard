@@ -1,4 +1,4 @@
-package ui.config;
+package config;
 
 import java.awt.*;
 
@@ -30,6 +30,25 @@ public class Setup {
         localIP();
         longitude();
         latitude();
+        logging();
+    }
+
+    private static void logging(){
+        String m = getArg("--out.logging");
+        if(m != null){
+            Configuration.LOGGING = m.equalsIgnoreCase("true");
+        }
+
+        String p;
+        p = getArg("--out.logging.path");
+        if(p != null){
+            Configuration.LOGGING_PATH = p;
+        }
+
+        p = getArg("--out.logging.fileFormat");
+        if(p != null){
+            Configuration.LOGGING_FILE_FORMAT = p;
+        }
     }
 
     private static void longitude(){

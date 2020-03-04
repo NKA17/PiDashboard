@@ -1,5 +1,7 @@
 package realTime;
 
+import raspberryPi.Printer;
+
 public class Ticker implements Runnable {
 
     private long interval = 200;
@@ -33,16 +35,18 @@ public class Ticker implements Runnable {
 
     @Override
     public void run() {
+        Printer.println("Ticker %d deployed. {%s}",m,refreshable.toString());
         while(refreshable.isPowered()){
             long start = System.currentTimeMillis();
             while(System.currentTimeMillis() - start < interval);
 
-            //if(m>0)
-            //System.out.println("Ticker "+m);
+            if(m>0){
+                Printer.println("Ticker %d ticked. {%s}",m,refreshable.toString());
+            }
             refreshable.refresh();
         }
 
 
-        //System.out.println("Ticker "+m+" died.");
+        Printer.println("Ticker "+m+" died.");
     }
 }

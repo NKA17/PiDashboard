@@ -3,7 +3,7 @@ package thirdparty.location;
 import org.json.JSONObject;
 import raspberryPi.RPiInterface;
 import thirdparty.ApiClient;
-import ui.config.Configuration;
+import config.Configuration;
 
 import java.io.IOException;
 

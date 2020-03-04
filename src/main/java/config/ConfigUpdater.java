@@ -1,6 +1,4 @@
-package ui.config;
-
-import raspberryPi.RPiInterface;
+package config;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -32,7 +30,7 @@ public class ConfigUpdater {
             if(local.containsKey(k)){
                 String s = String.format("%s=%s\n",k,local.getArg(k));
                 if(!kv.contains(s)){
-                    kv.add("(deprecated) "+s);
+                    kv.add("(deprecated) "+s.replaceAll("\\(deprecated\\)\\s*",""));
                 }
             }
         }

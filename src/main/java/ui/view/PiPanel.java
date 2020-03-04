@@ -1,5 +1,6 @@
 package ui.view;
 
+import raspberryPi.Printer;
 import realTime.RefreshRateHandler;
 import realTime.Refreshable;
 import realTime.TimeUnit;
@@ -143,5 +144,11 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
     public void pause(){
         if(refreshRateHandler == null)return;
         refreshRateHandler.pause();
+    }
+
+    public String toString(){
+
+        return String.format("%s[x=%d,y=%d,w=%d,h=%d]",
+                getClass().getName(),getX(),getY(),getW(),getH());
     }
 }

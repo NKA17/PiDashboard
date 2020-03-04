@@ -1,15 +1,9 @@
 package ui.widget;
 
-import enums.Axis;
-import graphics.ImageCache;
-import graphics.sprites.SpriteSheet;
-import raspberryPi.RPiInterface;
-import realTime.Refreshable;
-import realTime.Ticker;
 import realTime.TimeUnit;
 import thirdparty.weather.WeatherAPI;
 import thirdparty.weather.WeatherData;
-import ui.config.Configuration;
+import config.Configuration;
 import ui.tools.font.FontInfo;
 import ui.tools.font.FontTool;
 import ui.tools.graphics.ImageTransform;
@@ -17,7 +11,6 @@ import ui.view.PiPanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 
 public class WeatherImage extends PiPanel {
 
@@ -70,6 +63,7 @@ public class WeatherImage extends PiPanel {
     }
 
     public void updateAfter(int interval, TimeUnit tu){
+        //Millis is not long enough to make the request to the api
         if(tu == TimeUnit.MILLISECONDS){
             pause();
         }else {

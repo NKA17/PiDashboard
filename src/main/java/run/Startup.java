@@ -2,12 +2,13 @@ package run;
 
 
 import organization.ScreenOrganizer;
+import raspberryPi.Printer;
 import raspberryPi.RPiInterface;
 import realTime.ImmediateAction;
 import realTime.TimeUnit;
 import thirdparty.location.LocationApi;
-import ui.config.Configuration;
-import ui.config.Setup;
+import config.Configuration;
+import config.Setup;
 import ui.view.PiFrame;
 import ui.view.PiScreen;
 import ui.widget.*;
@@ -20,6 +21,7 @@ public class Startup {
 
     public static void main(String[] args){
         Setup.setup(args);
+        Printer.println("Starting Dashboard...");
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = 1;
@@ -31,7 +33,7 @@ public class Startup {
 
         InternetStatusPanel isp = new InternetStatusPanel();
         isp.setRefreshInterval(10,TimeUnit.MINUTES);
-        clockScreen.getHiddenPanels().add(isp);
+        clockScreen.addFooterPanel(isp);
         ImmediateAction goodAction = new ImmediateAction() {
             @Override
             public void action() {
@@ -39,23 +41,23 @@ public class Startup {
                 RPiInterface.getLocalIpAddress();
             }
         };
-        ImmediateAction badAction = new ImmediateAction() {
-            @Override
-            public void action() {
-                clockScreen.addFooterPanel(isp);
-            }
-        };
-        ImmediateAction extendedAction = new ImmediateAction() {
-            @Override
-            public void action() {
-                if(!isp.getInternetStatus()){
-                    RPiInterface.wakeScreen();
-                }
-            }
-        };
-        isp.setStatusTurnedGoodAction(goodAction);
-        isp.setStatusTurnedBadAction(badAction);
-        isp.setExtendedAction(extendedAction);
+//        ImmediateAction badAction = new ImmediateAction() {
+//            @Override
+//            public void action() {
+//                clockScreen.addFooterPanel(isp);
+//            }
+//        };
+//        ImmediateAction extendedAction = new ImmediateAction() {
+//            @Override
+//            public void action() {
+//                if(!isp.getInternetStatus()){
+//                    RPiInterface.wakeScreen();
+//                }
+//            }
+//        };
+//        isp.setStatusTurnedGoodAction(goodAction);
+//        isp.setStatusTurnedBadAction(badAction);
+//        isp.setExtendedAction(extendedAction);
 
         Clock clock = new Clock(clockScreen.getW(),clockScreen.getH());
         clockScreen.addPiPanel(clock);
@@ -73,7 +75,7 @@ public class Startup {
 
 
         WeatherImage weatherImage = new WeatherImage(150,60);
-        weatherImage.updateAfter(1, TimeUnit.MINUTES);
+        weatherImage.updateAfter(10, TimeUnit.MINUTES);
         clockScreen.addPiPanel(weatherImage);
 
         LocalIpDisplay localIP = new LocalIpDisplay(60,30);
@@ -81,7 +83,7 @@ public class Startup {
         clockScreen.addFooterPanel(localIP);
         localIP.setRefreshInterval(12,TimeUnit.HOURS);
 
-        pf.timer(200);
+        pf.timer(900);
 
         pf.pack();
         EventQueue.invokeLater(() -> {

@@ -1,9 +1,10 @@
 package ui.view;
 
 import organization.ScreenOrganizer;
+import raspberryPi.Printer;
 import raspberryPi.RPiInterface;
 import realTime.DelayedAction;
-import ui.config.Configuration;
+import config.Configuration;
 import ui.tools.interfaces.ObservableContainer;
 
 import java.awt.*;
@@ -106,6 +107,7 @@ public class PiScreen extends PiPanel {
         lastEmptied = System.currentTimeMillis();
 
         PiPanel panel = updatedPanels.poll();
+        Printer.println("A panel updated {}",panel.toString());
         if(organizer != null){
             organizer.focus(panel);
         }
@@ -121,6 +123,7 @@ public class PiScreen extends PiPanel {
                         }
                     }
                 };
+                action.setDescription("Sleep screen after showing updates");
                 action.deploy();
             }
             if(Configuration.SWAP_TIME != -1){
@@ -130,6 +133,7 @@ public class PiScreen extends PiPanel {
                         organizer.reset();
                     }
                 };
+                action.setDescription("No more updates to show, reset organizer");
                 action.deploy();
             }
         }

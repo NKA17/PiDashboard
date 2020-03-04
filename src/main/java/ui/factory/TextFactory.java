@@ -1,6 +1,6 @@
 package ui.factory;
 
-import ui.config.Configuration;
+import config.Configuration;
 
 import javax.swing.*;
 

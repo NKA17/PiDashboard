@@ -1,6 +1,6 @@
 package ui.widget;
 
-import ui.config.Configuration;
+import config.Configuration;
 import ui.tools.font.FontInfo;
 import ui.tools.font.FontTool;
 import ui.view.PiPanel;

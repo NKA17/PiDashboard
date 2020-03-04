@@ -7,6 +7,9 @@
 --time.sleepAfter=
 --path.images=
 --out.print=
+--out.logging=true
+--out.logging.path=
+--out.logging.fileFormat=
 --color.window=
 --color.screen=
 --color.panel=

@@ -7,7 +7,7 @@ import raspberryPi.RPiInterface;
 import thirdparty.ApiClient;
 import thirdparty.location.LocationApi;
 import thirdparty.location.LocationData;
-import ui.config.Configuration;
+import config.Configuration;
 
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ public class WeatherAPI {
         return data;
     }
     public WeatherData getWeatherNow(){
-        Printer.println("MAKING REQUEST!!!");
+        Printer.println("Requesting the weather from our beloved overlords.");
 
         try {
             String endPoint;

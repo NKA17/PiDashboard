@@ -1,14 +1,10 @@
 package raspberryPi;
 
-import javafx.application.ConditionalFeature;
 import realTime.DoubleAction;
-import ui.config.Configuration;
-import ui.config.Setup;
+import config.Configuration;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,6 +69,7 @@ public class RPiInterface {
             }
 
             BufferedReader reader = getProcessInput(get_local_ip_address);
+            Printer.println("Getting local ip...");
             if(reader == null){
                 return null;
             }
@@ -82,6 +79,7 @@ public class RPiInterface {
                 Matcher m = p.matcher(line);
                 if(m.find()){
                     Configuration.LOCATION_LOCAL_IP = m.toMatchResult().group(1);
+                    Printer.println("Local IP = (%s)",Configuration.LOCATION_LOCAL_IP);
                     return m.toMatchResult().group(1);
                 }
             }
@@ -96,10 +94,13 @@ public class RPiInterface {
     public static boolean checkInternetConnection(){
         try {
             if(windows()){
-                return windowsCheckInternet();
+                boolean b = windowsCheckInternet();
+                Printer.println("Internet connection = {%s}",(b)?("GOOD"):("BAD"));
+                return b;
             }
 
             Process process = getProcess(check_internet);
+            Printer.println("Checking internet connection...");
 
             if(process == null){
                 return false;
@@ -117,20 +118,23 @@ public class RPiInterface {
                 if(m.find()){
                     int bytes = Integer.parseInt(m.toMatchResult().group(1));
                     Configuration.CONNTECTED_TO_INTERNET = bytes > 0;
+
+                    Printer.println("Internet connection = {%s}",(bytes > 0)?("GOOD"):("BAD"));
                     return bytes > 0;
                 }
             }
             reader.close();
-            return false;
         }catch (Exception e){
             e.printStackTrace();
-            return false;
         }
+        Printer.println("Internet connection = {%s}","BAD");
+        return false;
     }
 
     private static boolean windowsCheckInternet(){
         try{
             Process process = Runtime.getRuntime().exec("ping google.com");
+            Printer.println("Checking internet connection...");
 
             if(process == null){
                 return false;
@@ -172,6 +176,7 @@ public class RPiInterface {
     public static String getPublicIpAddress(){
         try {
             BufferedReader reader = getProcessInput(get_public_ip_address);
+            Printer.println("Getting public ip...");
             if(reader == null){
                 return null;
             }
@@ -181,6 +186,7 @@ public class RPiInterface {
                 Matcher m = p.matcher(line);
                 if(m.find()){
                     Configuration.LOCATION_PUBLIC_IP = m.toMatchResult().group(1);
+                    Printer.println("Public IP = (%s)",Configuration.LOCATION_PUBLIC_IP);
                     return m.toMatchResult().group(1);
                 }
             }
@@ -197,7 +203,7 @@ public class RPiInterface {
             if(Configuration.SCRIPT_LOCATION == null){
                 return null;
             }
-            Process process = Runtime.getRuntime().exec(String.format("./%s/%s", Configuration.SCRIPT_LOCATION,scriptName).replaceAll("//","/"));
+            Process process = runScript(scriptName);
 
             return process;
         }catch (Exception e){
@@ -211,7 +217,7 @@ public class RPiInterface {
             if(Configuration.SCRIPT_LOCATION.equalsIgnoreCase("null")){
                 return null;
             }
-            Process process = Runtime.getRuntime().exec(String.format("./%s/%s", Configuration.SCRIPT_LOCATION,scriptName).replaceAll("//","/"));
+            Process process = runScript(scriptName);
 
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
@@ -223,30 +229,34 @@ public class RPiInterface {
         }
     }
 
-    private static void runScript(String scriptName){
+    private static Process runScript(String scriptName){
         try{
             if(Configuration.SCRIPT_LOCATION == null){
-                return;
+                return null;
             }
-            Runtime.getRuntime().exec(String.format("./%s/%s", Configuration.SCRIPT_LOCATION,scriptName).replaceAll("//","/"));
+            String scriptPath = String.format("./%s/%s", Configuration.SCRIPT_LOCATION,scriptName).replaceAll("//","/");
+            Printer.println("Running script {%s}",scriptPath);
+            return Runtime.getRuntime().exec(scriptPath);
         }catch (Exception e){
             e.printStackTrace();
         }
+        return null;
     }
 
-    private static void runScript(String scriptName, String...args){
+    private static Process runScript(String scriptName, String...args){
         try{
             if(Configuration.SCRIPT_LOCATION == null){
-                return;
+                return null;
             }
             String argString = "";
             for(String a: args){
                 argString += a+" ";
             }
-            Runtime.getRuntime().exec(String.format("./%s/%s ", Configuration.SCRIPT_LOCATION,scriptName).replaceAll("//","/")+argString);
+            return Runtime.getRuntime().exec(String.format("./%s/%s ", Configuration.SCRIPT_LOCATION,scriptName).replaceAll("//","/")+argString);
         }catch (Exception e){
             e.printStackTrace();
         }
+        return null;
     }
 
     private static void kill(Process p){

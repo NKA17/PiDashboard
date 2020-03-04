@@ -1,5 +1,6 @@
 package thirdparty.weather;
 
+import graphics.ImageCache;
 import thirdparty.ApiClient;
 
 import java.awt.*;
@@ -26,7 +27,12 @@ public class WeatherData {
         if(icon == null){
             ApiClient client = new ApiClient(getIconURL());
             try {
+                if(ImageCache.contains(getIconURL())){
+                    return ImageCache.get(getIconURL());
+                }
+
                 icon = client.getImage("");
+                ImageCache.put(getIconURL(),icon);
             }catch (Exception e){
                 icon = new BufferedImage(50,50,BufferedImage.TYPE_4BYTE_ABGR);
                 icon.getGraphics().setColor(new Color(30,30,30));

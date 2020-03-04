@@ -2,7 +2,7 @@ package ui.view;
 
 import realTime.Refreshable;
 import realTime.Ticker;
-import ui.config.Configuration;
+import config.Configuration;
 import ui.tools.interfaces.ObservableContainer;
 
 import javax.swing.*;
@@ -118,5 +118,11 @@ public class PiFrame extends JFrame implements Refreshable,ObservableContainer {
     @Override
     public int getH() {
         return getHeight();
+    }
+
+    public String toString(){
+
+        return String.format("%s[x=%d,y=%d,w=%d,h=%d]",
+                getClass().getName(),getX(),getY(),getW(),getH());
     }
 }

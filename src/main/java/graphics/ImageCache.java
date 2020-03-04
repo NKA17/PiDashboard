@@ -1,9 +1,8 @@
 package graphics;
 
 import enums.Axis;
-import ui.config.Configuration;
+import config.Configuration;
 import ui.tools.graphics.ImageTransform;
-import ui.widget.Spacer;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -48,6 +47,10 @@ public class ImageCache {
         return file.exists();
     }
 
+    public static boolean contains(String key){
+        return cache.containsKey(key);
+    }
+
     public static BufferedImage get(String path, int w, int h){
         String path2 = Configuration.IMAGE_LOCATION + path;
 
@@ -80,5 +83,9 @@ public class ImageCache {
                 return image;
             }
         }
+    }
+
+    public static void put(String key, BufferedImage image){
+        cache.put(key,image);
     }
 }

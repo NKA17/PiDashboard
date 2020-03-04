@@ -1,11 +1,9 @@
 package ui.widget;
 
-import raspberryPi.RPiInterface;
 import realTime.DelayedAction;
-import ui.config.Configuration;
+import config.Configuration;
 import ui.tools.font.FontInfo;
 import ui.tools.font.FontTool;
-import ui.tools.graphics.GraphicsStore;
 import ui.view.PiPanel;
 
 import java.awt.*;
@@ -115,6 +113,7 @@ public class Clock extends PiPanel {
                     updatedPanels.add(me);
                 }
             };
+            da.setDescription("Wake screen for hour change");
             da.deploy();
         }
 

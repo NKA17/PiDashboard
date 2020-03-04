@@ -1,8 +1,8 @@
-(deprecated) (deprecated) --cycleTime=15000
-(deprecated) (deprecated) --images=aaaaaaa
-(deprecated) (deprecated) --print=false
-(deprecated) (deprecated) --sleepAfter=-1
-(deprecated) (deprecated) --wake=true
+(deprecated) --cycleTime=15000
+(deprecated) --images=aaaaaaa
+(deprecated) --print=false
+(deprecated) --sleepAfter=-1
+(deprecated) --wake=true
 --check.internet=false
 --color.panel=
 --color.screen=
@@ -14,6 +14,9 @@
 --location.latitude=
 --location.local_ip=192.168.0.10
 --location.longitude=
+--out.logging.fileFormat=yyyy.MM.dd
+--out.logging.path=C:\Users\Nate\IdeaProjects\PiDashboard\src\main\resources\logs\
+--out.logging=true
 --out.print=true
 --path.images=C:\Users\Nate\IdeaProjects\PiDashboard\out\artifacts\PiDashboard_jar\images\
 --path.scripts=

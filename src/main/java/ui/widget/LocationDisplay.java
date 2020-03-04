@@ -1,8 +1,7 @@
 package ui.widget;
 
 import thirdparty.location.LocationData;
-import ui.config.Configuration;
-import ui.tools.font.FontInfo;
+import config.Configuration;
 import ui.tools.font.FontTool;
 import ui.view.PiPanel;
 

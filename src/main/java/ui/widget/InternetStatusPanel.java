@@ -1,10 +1,9 @@
 package ui.widget;
 
-import enums.Axis;
 import graphics.ImageCache;
 import raspberryPi.RPiInterface;
 import realTime.PiAction;
-import ui.config.Configuration;
+import config.Configuration;
 import ui.view.PiPanel;
 
 import java.awt.*;

@@ -1,7 +1,7 @@
 package thirdparty;
 
 import raspberryPi.RPiInterface;
-import ui.config.Configuration;
+import config.Configuration;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
