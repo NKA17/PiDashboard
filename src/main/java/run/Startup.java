@@ -14,6 +14,7 @@ import ui.view.PiScreen;
 import ui.widget.*;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Startup {
     //Host Machine Dependency [sudo [-H]] pip[2|3] install gps3
@@ -33,7 +34,7 @@ public class Startup {
 
         InternetStatusPanel isp = new InternetStatusPanel();
         isp.setRefreshInterval(10,TimeUnit.MINUTES);
-        clockScreen.addFooterPanel(isp);
+        clockScreen.addHiddenPanel(isp);
         ImmediateAction goodAction = new ImmediateAction() {
             @Override
             public void action() {
@@ -41,23 +42,23 @@ public class Startup {
                 RPiInterface.getLocalIpAddress();
             }
         };
-//        ImmediateAction badAction = new ImmediateAction() {
-//            @Override
-//            public void action() {
-//                clockScreen.addFooterPanel(isp);
-//            }
-//        };
-//        ImmediateAction extendedAction = new ImmediateAction() {
-//            @Override
-//            public void action() {
-//                if(!isp.getInternetStatus()){
-//                    RPiInterface.wakeScreen();
-//                }
-//            }
-//        };
-//        isp.setStatusTurnedGoodAction(goodAction);
-//        isp.setStatusTurnedBadAction(badAction);
-//        isp.setExtendedAction(extendedAction);
+        ImmediateAction badAction = new ImmediateAction() {
+            @Override
+            public void action() {
+                clockScreen.addFooterPanel(isp, 0);
+            }
+        };
+        ImmediateAction extendedAction = new ImmediateAction() {
+            @Override
+            public void action() {
+                if(!isp.getInternetStatus()){
+                    RPiInterface.wakeScreen();
+                }
+            }
+        };
+        isp.setStatusTurnedGoodAction(goodAction);
+        isp.setStatusTurnedBadAction(badAction);
+        isp.setExtendedAction(extendedAction);
 
         Clock clock = new Clock(clockScreen.getW(),clockScreen.getH());
         clockScreen.addPiPanel(clock);
@@ -73,6 +74,10 @@ public class Startup {
             clockScreen.addFooterPanel(city);
         }
 
+        WeatherForecast forecast = new WeatherForecast(Configuration.WIDTH_CONSTRAINT,Configuration.HEIGHT_CONSTRAINT);
+        forecast.setRefreshInterval(1,TimeUnit.HOURS);
+        clockScreen.addHiddenPanel(forecast);
+
 
         WeatherImage weatherImage = new WeatherImage(150,60);
         weatherImage.updateAfter(10, TimeUnit.MINUTES);
@@ -83,7 +88,14 @@ public class Startup {
         clockScreen.addFooterPanel(localIP);
         localIP.setRefreshInterval(12,TimeUnit.HOURS);
 
-        pf.timer(900);
+        pf.timer(200);
+
+        if(!Configuration.DISPLAY_SHOW_CURSOR) {
+            BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+            Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                    cursorImg, new Point(0, 0), "blank cursor");
+            pf.getContentPane().setCursor(blankCursor);
+        }
 
         pf.pack();
         EventQueue.invokeLater(() -> {

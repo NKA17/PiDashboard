@@ -31,6 +31,14 @@ public class Setup {
         longitude();
         latitude();
         logging();
+        showCursor();
+    }
+
+    private static void showCursor(){
+        String m = getArg("--display.showCursor");
+        if(m != null){
+            Configuration.DISPLAY_SHOW_CURSOR = m.equalsIgnoreCase("true");
+        }
     }
 
     private static void logging(){

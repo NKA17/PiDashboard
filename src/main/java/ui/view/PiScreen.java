@@ -155,6 +155,13 @@ public class PiScreen extends PiPanel {
             organizer.update();
         }
     }
+    public void addPiPanel(PiPanel panel, int index){
+        getPanels().add(index,panel);
+        panel.setObserver(this);
+        if(organizer != null){
+            organizer.update();
+        }
+    }
 
     public void removePiPanel(PiPanel panel){
         getPanels().remove(panel);
@@ -166,6 +173,14 @@ public class PiScreen extends PiPanel {
 
     public void addFooterPanel(PiPanel panel){
         getFooters().add(panel);
+        panel.setObserver(this);
+        if(organizer != null){
+            organizer.update();
+        }
+    }
+
+    public void addFooterPanel(PiPanel panel, int index){
+        getFooters().add(index, panel);
         panel.setObserver(this);
         if(organizer != null){
             organizer.update();

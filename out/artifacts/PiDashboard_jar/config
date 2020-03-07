@@ -10,6 +10,7 @@
 --out.logging=true
 --out.logging.path=
 --out.logging.fileFormat=
+--display.showCursor=
 --color.window=
 --color.screen=
 --color.panel=

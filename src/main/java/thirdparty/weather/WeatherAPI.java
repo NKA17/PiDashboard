@@ -10,6 +10,8 @@ import thirdparty.location.LocationData;
 import config.Configuration;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class WeatherAPI {
 
@@ -22,6 +24,43 @@ public class WeatherAPI {
         data.setIconURL("https://api.weather.gov/icons/land/night/sct?size=small");
         return data;
     }
+
+    public List<WeatherData> getBadWeatherForecastDays(int days){
+        List<WeatherData> list = new ArrayList<>();
+        for(int i = 0; i < days; i++){
+            list.add(getBadData());
+        }
+        return list;
+    }
+
+    public List<WeatherData> getWeatherForecastDays(int days){
+        Printer.println("Requesting the weather from our beloved overlords.");
+
+        try {
+            List<WeatherData> list = new ArrayList<>();
+            String endPoint;
+
+            endPoint = getCoordinatesEndpoint();
+            if(endPoint==null) {
+                throw new IOException("No internet connection.");
+            }
+            endPoint = getGridPointsEndPoint(endPoint);//.replaceAll("hourly","");
+
+            String response = client.makeRequest(endPoint);
+            JSONObject json = new JSONObject(response);
+            JSONObject properties = json.getJSONObject("properties");
+            JSONArray periods = properties.getJSONArray("periods");
+
+
+            return hoursToDays(periods,days);
+        }catch (IOException e){
+            List<WeatherData> list = new ArrayList<>();
+            for(int i = 0; i < days; i++)
+                list.add(getBadData());
+            return list;
+        }
+    }
+
     public WeatherData getWeatherNow(){
         Printer.println("Requesting the weather from our beloved overlords.");
 
@@ -40,17 +79,25 @@ public class WeatherAPI {
             JSONArray periods = properties.getJSONArray("periods");
             JSONObject now = periods.getJSONObject(0);
 
-            WeatherData wd = new WeatherData();
-            wd.setWeather(now.getString("shortForecast"));
-            wd.setTemperature(now.getInt("temperature"));
-            wd.setWindSpeed(now.getString("windSpeed"));
-            wd.setWindDirection(now.getString("windDirection"));
-            wd.setIconURL(now.getString("icon").replaceAll("size=small","size=large"));
+            WeatherData wd = createData(now);
 
             return wd;
         }catch (IOException e){
             return getBadData();
         }
+    }
+
+    private WeatherData createData(JSONObject object){
+        WeatherData wd = new WeatherData();
+        wd.setName(object.getString("name"));
+        wd.setWeather(object.getString("shortForecast"));
+        wd.setTemperature(object.getInt("temperature"));
+        wd.setWindSpeed(object.getString("windSpeed"));
+        wd.setDateTime(object.getString("startTime"));
+        wd.setWindDirection(object.getString("windDirection"));
+        wd.setIconURL(object.getString("icon").replaceAll("size=small","size=large"));
+
+        return wd;
     }
 
     public String getCoordinatesEndpoint(){
@@ -96,6 +143,7 @@ public class WeatherAPI {
 
     private WeatherData getBadData(){
         WeatherData wd = new WeatherData();
+        wd.setName("???");
         wd.setWeather("Weather?");
         wd.setTemperature(0);
         wd.setWindSpeed("?");
@@ -103,6 +151,64 @@ public class WeatherAPI {
         wd.setGoodData(false);
 
         return wd;
+    }
+
+    private List<WeatherData> hoursToDays(JSONArray dataList, int days){
+        List<WeatherData> list = new ArrayList<>();
+        HashMap<Integer, List<WeatherData>> map = new HashMap<>();
+
+        int d = 0;
+        for(int i = 0; i < dataList.length() && d < days; i++){
+            WeatherData data = createData(dataList.getJSONObject(i));
+            if(!map.containsKey(d)){
+                List<WeatherData> wdList = new ArrayList<>();
+                wdList.add(data);
+                map.put(d,wdList);
+            }else{
+                List<WeatherData> today = map.get(d);
+                if(sameDay(today.get(0),data)){
+                    today.add(data);
+                }else {
+                    d++;
+                    if(d >= days){
+                        break;
+                    }
+                    List<WeatherData> wdList = new ArrayList<>();
+                    wdList.add(data);
+                    map.put(d,wdList);
+                }
+            }
+        }
+
+        Iterator<Integer> iter = map.keySet().iterator();
+        while(iter.hasNext()){
+            int key = iter.next();
+            List<WeatherData> data = map.get(key);
+            int temp = 0;
+            int wind = 0;
+            WeatherData today = data.get(0);
+            list.add(today);
+            for(WeatherData wd: data){
+                temp += wd.getTemperature();
+                wind += Integer.parseInt(wd.getWindSpeed().replaceAll("\\s+mph",""));
+            }
+            today.setTemperature(temp/data.size());
+            today.setWindSpeed((wind/data.size())+"");
+            today.setName(today.getDayOfWeek());
+        }
+
+        return list;
+    }
+
+
+
+    private boolean sameDay(WeatherData wd1, WeatherData wd2){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+
+        int w1 = Integer.parseInt(dateFormat.format(wd1.getDate()));
+        int w2 = Integer.parseInt(dateFormat.format(wd2.getDate()));
+
+        return w1 == w2;
     }
 
     public static void main(String[] args){
