@@ -41,7 +41,7 @@ public class InternetStatusPanel extends PiPanel {
         boolean newStatus = RPiInterface.checkInternetConnection();
 
         if(newStatus != internetStatus){
-            PiPanel.updatedPanels.add(this);
+            PiPanel.addToUpdateQueue(this);
         }
 
         if(newStatus != internetStatus && newStatus && statusTurnedGoodAction != null){

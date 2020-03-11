@@ -1,16 +1,12 @@
 package ui.view;
 
-import raspberryPi.Printer;
 import realTime.RefreshRateHandler;
 import realTime.Refreshable;
 import realTime.TimeUnit;
 import ui.tools.interfaces.ObservableContainer;
-import ui.widget.WeatherImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -21,8 +17,9 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
     private int y;
     private ObservableContainer observer;
     private RefreshRateHandler refreshRateHandler = null;
-    public static Queue<PiPanel> updatedPanels = new ArrayBlockingQueue<PiPanel>(20);
+    private static Queue<PiPanel> updatedPanels = new ArrayBlockingQueue<PiPanel>(20);
     private boolean allowReorganize = true;
+    private boolean onQueue = false;
 
     public PiPanel(){
         this(100,30);
@@ -146,9 +143,35 @@ public abstract class PiPanel extends JPanel implements Refreshable,ObservableCo
         refreshRateHandler.pause();
     }
 
+    public boolean isOnQueue() {
+        return onQueue;
+    }
+
+    public void setOnQueue(boolean onQueue) {
+        this.onQueue = onQueue;
+    }
+
     public String toString(){
 
         return String.format("%s[x=%d,y=%d,w=%d,h=%d]",
                 getClass().getName(),getX(),getY(),getW(),getH());
+    }
+
+    public static void addToUpdateQueue(PiPanel p){
+        if(p.isOnQueue()){
+            return;
+        }
+        updatedPanels.add(p);
+        p.setOnQueue(true);
+    }
+
+    public static PiPanel pollFromUpdateQueue(){
+        PiPanel p = updatedPanels.poll();
+        p.setOnQueue(false);
+        return p;
+    }
+
+    public static boolean isQueueEmpty(){
+        return updatedPanels.isEmpty();
     }
 }

@@ -1,6 +1,7 @@
 package run;
 
 
+import config.ConfigParser;
 import organization.ScreenOrganizer;
 import raspberryPi.Printer;
 import raspberryPi.RPiInterface;
@@ -15,6 +16,9 @@ import ui.widget.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Scanner;
 
 public class Startup {
     //Host Machine Dependency [sudo [-H]] pip[2|3] install gps3
@@ -22,6 +26,10 @@ public class Startup {
 
     public static void main(String[] args){
         Setup.setup(args);
+        if(Configuration.MODE.equalsIgnoreCase("exec")){
+            testExecMode();
+        }
+
         Printer.println("Starting Dashboard...");
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -74,11 +82,6 @@ public class Startup {
             clockScreen.addFooterPanel(city);
         }
 
-        WeatherForecast forecast = new WeatherForecast(Configuration.WIDTH_CONSTRAINT,Configuration.HEIGHT_CONSTRAINT);
-        forecast.setRefreshInterval(1,TimeUnit.HOURS);
-        clockScreen.addHiddenPanel(forecast);
-
-
         WeatherImage weatherImage = new WeatherImage(150,60);
         weatherImage.updateAfter(10, TimeUnit.MINUTES);
         clockScreen.addPiPanel(weatherImage);
@@ -97,6 +100,10 @@ public class Startup {
             pf.getContentPane().setCursor(blankCursor);
         }
 
+        PiTempPanel ptp = new PiTempPanel();
+        ptp.setRefreshInterval(10,TimeUnit.SECONDS);
+        clockScreen.addPiPanel(ptp);
+
         pf.pack();
         EventQueue.invokeLater(() -> {
             pf.setVisible(true);
@@ -106,5 +113,27 @@ public class Startup {
     private static boolean getLocationData(){
         LocationApi client = new LocationApi();
         return client.configureLocation();
+    }
+
+    private static void testExecMode(){
+        try{
+            System.out.println("$ "+Setup.configParser.getArg("--message"));
+            Process p = Runtime.getRuntime().exec(Setup.configParser.getArg("--message"));
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(p.getInputStream()));
+
+            int i = 100;
+            String out;
+            while((out = reader.readLine()) != null && (i--) > 0){
+                System.out.println(out);
+            }
+
+            if(p.isAlive()){
+                p.destroy();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        System.exit(-1);
     }
 }

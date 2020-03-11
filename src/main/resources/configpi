@@ -3,6 +3,8 @@
 (deprecated) --print=false
 (deprecated) --sleepAfter=-1
 (deprecated) --wake=true
+--mode=exec
+--message=ping google.com
 --check.internet=false
 --color.panel=
 --color.screen=

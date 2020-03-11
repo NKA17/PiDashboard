@@ -93,7 +93,7 @@ public class PiScreen extends PiPanel {
         for(PiPanel pp: footers){
             pp.refresh();
         }
-        if(!updatedPanels.isEmpty()){
+        if(!PiPanel.isQueueEmpty()){
             emptyQueue();
         }
     }
@@ -106,19 +106,19 @@ public class PiScreen extends PiPanel {
 
         lastEmptied = System.currentTimeMillis();
 
-        PiPanel panel = updatedPanels.poll();
+        PiPanel panel = PiPanel.pollFromUpdateQueue();
         Printer.println("A panel updated {}",panel.toString());
         if(organizer != null){
             organizer.focus(panel);
         }
         RPiInterface.wakeScreen();
 
-        if(updatedPanels.isEmpty()){
+        if(PiPanel.isQueueEmpty()){
             if(Configuration.SLEEP_AFTER_TIME != -1) {
                 DelayedAction action = new DelayedAction(Configuration.SLEEP_AFTER_TIME) {
                     @Override
                     public void action() {
-                        if(PiPanel.updatedPanels.isEmpty()) {
+                        if(PiPanel.isQueueEmpty()) {
                             RPiInterface.sleepScreen();
                         }
                     }

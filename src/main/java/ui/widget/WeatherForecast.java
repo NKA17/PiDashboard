@@ -127,9 +127,7 @@ public class WeatherForecast extends PiPanel {
 
         data = newData;
         if(changed){
-            //show it for double time, it takes a little longer to read
-            PiPanel.updatedPanels.add(this);
-            PiPanel.updatedPanels.add(this);
+            PiPanel.addToUpdateQueue(this);
         }
     }
 

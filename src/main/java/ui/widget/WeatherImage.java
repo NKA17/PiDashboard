@@ -95,7 +95,7 @@ public class WeatherImage extends PiPanel {
             }else {
                 weatherData.update(newData);
             }
-            updatedPanels.add(this);
+            PiPanel.addToUpdateQueue(this);
         }
     }
 

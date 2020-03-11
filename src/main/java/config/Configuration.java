@@ -5,6 +5,8 @@ import thirdparty.location.LocationData;
 import java.awt.*;
 
 public class Configuration {
+    public static String MODE = "default";
+
     public static boolean DISPLAY_SHOW_CURSOR = true;
 
     public static boolean LOGGING = false;

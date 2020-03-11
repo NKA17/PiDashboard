@@ -4,7 +4,7 @@ import java.awt.*;
 
 public class Setup {
 
-    private static ConfigParser configParser = null;
+    public static ConfigParser configParser = null;
     public static void setup(String[] args){
         System.out.println("Setup...");
         String c = getArg("--config",args);
@@ -32,6 +32,14 @@ public class Setup {
         latitude();
         logging();
         showCursor();
+        mode();
+    }
+
+    private static void mode(){
+        String m = getArg("--mode");
+        if(m != null){
+            Configuration.MODE = m;
+        }
     }
 
     private static void showCursor(){

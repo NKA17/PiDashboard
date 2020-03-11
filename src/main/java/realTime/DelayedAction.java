@@ -3,7 +3,7 @@ package realTime;
 public abstract class DelayedAction extends PiAction {
 
 
-    public DelayedAction(int delay) {
+    public DelayedAction(long delay) {
         super(delay);
     }
 

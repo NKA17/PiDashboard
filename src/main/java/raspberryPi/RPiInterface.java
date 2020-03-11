@@ -1,10 +1,14 @@
 package raspberryPi;
 
+import realTime.DelayedAction;
 import realTime.DoubleAction;
 import config.Configuration;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Random;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,7 +26,7 @@ public class RPiInterface {
     private static final String get_public_ip_address = "get_public_ip.sh";
     private static final String get_local_ip_address = "get_local_ip.sh";
     private static final String check_internet = "check_internet.sh";
-    private static final String kill_process = "kill_process.sh";
+    private static final String get_temperature = "vcgencmd measure_temp"; //vcgencmd measure_temp -> temp=50.8'C
 
     public static void wakeScreenTemp(int time){
         //vcgencmd display_power 0
@@ -163,6 +167,31 @@ public class RPiInterface {
         }
     }
 
+    public static double getTemperature(){
+        try{
+            if (windows()) {
+                Random r = new Random();
+                return r.nextDouble()*30 + 30;
+            }
+
+            Process process = Runtime.getRuntime().exec(get_temperature);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            Pattern p = Pattern.compile("temp=(\\d+\\.\\d+)");
+            String line;
+            while((line = reader.readLine()) != null){
+                Matcher m = p.matcher(line);
+                if(m.find()){
+                    double temp = Double.parseDouble(m.group(1));
+                    Printer.println("Temperature = %f", temp);
+                    return temp;
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public static String windowsGetPublicIpAddress(){
         try{
             //curl http://myexternalip.com/raw
@@ -259,10 +288,6 @@ public class RPiInterface {
         return null;
     }
 
-    private static void kill(Process p){
-        runScript(kill_process,p.toString());
-    }
-
     //Process statuses
     //https://www.liquidweb.com/kb/linux-process-statuses/
 
@@ -273,6 +298,50 @@ public class RPiInterface {
     }
 //
     public static void main(String[] args){
-        checkInternetConnection();
+        try{
+            Scanner in = new Scanner(System.in);
+            String input;
+            while(true){
+                System.out.print("$ ");
+                input = in.nextLine().trim();
+                if(input.equalsIgnoreCase("quit()")){
+                    break;
+                }else {
+                    Process p = Runtime.getRuntime().exec(input);
+                    BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(p.getInputStream()));
+
+                    int i = 100;
+                    String out;
+                    while((out = reader.readLine()) != null && (i--) > 0){
+                        System.out.println(out);
+                    }
+
+                    if(p.isAlive()){
+                        p.destroy();
+                    }
+
+                    System.out.println();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public static void emergencyTerminate(long delayMillis, String reason){
+        Printer.println("Emergency exit of dashboard in %d, message: %s",delayMillis,reason);
+
+        DelayedAction da = new DelayedAction(delayMillis) {
+            @Override
+            public void action() {
+                System.exit(-1);
+            }
+        };
+        da.setDescription("Emergency exit event");
+        da.deploy();
+
+    }
+    public static void emergencyTerminate(String reason){
+        emergencyTerminate(0,reason);
     }
 }

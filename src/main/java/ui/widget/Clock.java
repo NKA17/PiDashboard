@@ -110,7 +110,7 @@ public class Clock extends PiPanel {
             DelayedAction da = new DelayedAction(57000) {
                 @Override
                 public void action() {
-                    updatedPanels.add(me);
+                    PiPanel.addToUpdateQueue(me);
                 }
             };
             da.setDescription("Wake screen for hour change");
