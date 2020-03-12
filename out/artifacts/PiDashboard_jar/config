@@ -1,4 +1,7 @@
 --dim=
+--mode=
+discord.token=
+discord.botId=
 --dim.height=
 --dim.width=
 --path.scripts=

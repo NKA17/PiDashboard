@@ -7,6 +7,7 @@ import raspberryPi.Printer;
 import raspberryPi.RPiInterface;
 import realTime.ImmediateAction;
 import realTime.TimeUnit;
+import thirdparty.discord.DiscordHandler;
 import thirdparty.location.LocationApi;
 import config.Configuration;
 import config.Setup;
@@ -30,7 +31,9 @@ public class Startup {
             testExecMode();
         }
 
+        Printer.println("---------------------------------------");
         Printer.println("Starting Dashboard...");
+        Printer.println("---------------------------------------");
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = 1;
@@ -91,7 +94,7 @@ public class Startup {
         clockScreen.addFooterPanel(localIP);
         localIP.setRefreshInterval(12,TimeUnit.HOURS);
 
-        pf.timer(200);
+        pf.timer(100);
 
         if(!Configuration.DISPLAY_SHOW_CURSOR) {
             BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
@@ -101,8 +104,15 @@ public class Startup {
         }
 
         PiTempPanel ptp = new PiTempPanel();
-        ptp.setRefreshInterval(10,TimeUnit.SECONDS);
+        ptp.setRefreshInterval(2,TimeUnit.SECONDS);
         clockScreen.addPiPanel(ptp);
+
+        DiscordHandler dh = new DiscordHandler();
+        dh.start();
+
+        DiscordMessagePiPanel dmp = new DiscordMessagePiPanel();
+        dh.setObserved(dmp);
+        clockScreen.addHiddenPanel(dmp);
 
         pf.pack();
         EventQueue.invokeLater(() -> {

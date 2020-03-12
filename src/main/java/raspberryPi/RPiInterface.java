@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -167,6 +168,7 @@ public class RPiInterface {
         }
     }
 
+    private static double tempMark = 0;
     public static double getTemperature(){
         try{
             if (windows()) {
@@ -182,7 +184,12 @@ public class RPiInterface {
                 Matcher m = p.matcher(line);
                 if(m.find()){
                     double temp = Double.parseDouble(m.group(1));
-                    Printer.println("Temperature = %f", temp);
+
+                    double tempDX = Math.abs(tempMark - temp);
+                    if(tempDX >=5) {
+                        tempMark = temp;
+                        Printer.println("Temperature = %f", temp);
+                    }
                     return temp;
                 }
             }

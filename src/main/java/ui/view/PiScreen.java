@@ -84,17 +84,21 @@ public class PiScreen extends PiPanel {
 
     @Override
     public void update() {
-        for(PiPanel pp: hiddenPanels){
-            pp.refresh();
-        }
-        for(PiPanel pp: panels){
-            pp.refresh();
-        }
-        for(PiPanel pp: footers){
-            pp.refresh();
-        }
-        if(!PiPanel.isQueueEmpty()){
-            emptyQueue();
+        try{
+            for(PiPanel pp: hiddenPanels){
+                pp.refresh();
+            }
+            for(PiPanel pp: panels){
+                pp.refresh();
+            }
+            for(PiPanel pp: footers){
+                pp.refresh();
+            }
+            if(!PiPanel.isQueueEmpty()){
+                emptyQueue();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

@@ -35,18 +35,21 @@ public class Ticker implements Runnable {
 
     @Override
     public void run() {
-        Printer.println("Ticker %d deployed. {%s}",m,refreshable.toString());
-        while(refreshable.isPowered()){
-            long start = System.currentTimeMillis();
-            while(System.currentTimeMillis() - start < interval);
+        try {
+            Printer.println("Ticker %d deployed. {%s}", m, refreshable.toString());
+            while (refreshable.isPowered()) {
+                Thread.sleep(interval);
 
-            if(m>0){
-                Printer.println("Ticker %d ticked. {%s}",m,refreshable.toString());
+                if (m > 0) {
+                    Printer.println("Ticker %d ticked. {%s}", m, refreshable.toString());
+                }
+                refreshable.refresh();
+
             }
-            refreshable.refresh();
+
+            Printer.println("Ticker " + m + " died.");
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
-
-        Printer.println("Ticker "+m+" died.");
     }
 }

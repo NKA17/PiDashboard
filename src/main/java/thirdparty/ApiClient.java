@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 
 public class ApiClient {
 
@@ -47,7 +48,9 @@ public class ApiClient {
             }
             path = cleanURL(path);
             URL url = new URL(path);
-            BufferedImage img = ImageIO.read(url);
+            URLConnection urlConnection = url.openConnection();
+            urlConnection.setRequestProperty("User-Agent","Chrome");
+            BufferedImage img = ImageIO.read(urlConnection.getInputStream());
             return img;
         }catch (IOException e){
             throw e;

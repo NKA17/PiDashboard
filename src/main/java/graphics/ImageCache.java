@@ -2,12 +2,14 @@ package graphics;
 
 import enums.Axis;
 import config.Configuration;
+import thirdparty.ApiClient;
 import ui.tools.graphics.ImageTransform;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 
 public class ImageCache {
@@ -64,6 +66,24 @@ public class ImageCache {
         }
 
         return image;
+    }
+
+    public static BufferedImage get(URL url){
+        if(cache.containsKey(url.toString())){
+            return cache.get(url.toString());
+        }else{
+            try {
+                ApiClient client = new ApiClient("");
+                BufferedImage image = client.getImage(url.toString());
+                cache.put(url.toString(),image);
+                return image;
+            }catch (Exception e){
+                BufferedImage image = new BufferedImage(50,50,BufferedImage.TYPE_4BYTE_ABGR);
+                image.getGraphics().setColor(new Color(30,30,30));
+                image.getGraphics().fillRect(0,0,50,50);
+                return image;
+            }
+        }
     }
 
     public static BufferedImage get(String path){

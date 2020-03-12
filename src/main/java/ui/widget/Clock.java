@@ -28,15 +28,7 @@ public class Clock extends PiPanel {
         font = Configuration.TEXT_FONT;
         setForeground(Configuration.TEXT_COLOR);
         setRefreshInterval(1000);
-        inheritConfiguration();
-    }
-
-    public void inheritConfiguration(){
-        if(Configuration.CLOCK_MILITARY){
-            useMilitaryTime();
-        }else{
-            setUseMeridean(Configuration.CLOCK_MERIDIAN);
-        }
+        setUseMeridean(false);
     }
 
     @Override

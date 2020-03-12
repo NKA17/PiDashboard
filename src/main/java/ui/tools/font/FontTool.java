@@ -1,12 +1,14 @@
 package ui.tools.font;
 
-import org.w3c.dom.css.Rect;
+import config.Configuration;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FontTool {
 
@@ -92,5 +94,38 @@ public class FontTool {
         Graphics2D g2 = (Graphics2D)g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g2.drawString(text,x,y+rect.height);
+    }
+
+    public static void drawAAStringInBox(Graphics g, String text, int x, int y, int w, int h ){
+        Font font = g.getFont();
+
+        FontInfo fontInfo = getBounds(font,"Tq");
+        int maxLines = h / (fontInfo.getH() + Configuration.GRIDBAG_INSETS.top);
+        List<String> lines = new ArrayList<>();
+        while(lines.size() < maxLines && text.length() > 0){
+            String[] split = text.split("\\s+");
+            String line = "";
+            for(int i = 0; i < split.length; i++){
+                String expanded = line + " " + split[i];
+                int lineWidth = getBounds(font,expanded).getW();
+                if(lineWidth <= w){
+                    line = expanded;
+                    if(i==split.length-1){
+                        lines.add(line);
+                        text = "";
+                    }
+                }else{
+                    lines.add(line);
+                    text = text.substring(line.length());
+                    break;
+                }
+            }
+        }
+
+        for(String line: lines){
+            y+=Configuration.GRIDBAG_INSETS.top;
+            drawAAString(g, line, x, y);
+            y += fontInfo.getH();
+        }
     }
 }

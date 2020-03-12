@@ -1,5 +1,7 @@
 package ui.widget;
 
+import graphics.ImageCache;
+import graphics.sprites.SpriteSheet;
 import realTime.TimeUnit;
 import thirdparty.weather.WeatherAPI;
 import thirdparty.weather.WeatherData;
@@ -16,6 +18,8 @@ public class WeatherImage extends PiPanel {
 
     private WeatherData weatherData = null;
     private boolean update = false;
+    private SpriteSheet rainAnimation = new SpriteSheet(ImageCache.get("RainSprite.png"),100,100);
+    private SpriteSheet stormAnimation = new SpriteSheet(ImageCache.get("StormSprite.png"),100,100);
 
     public WeatherImage(int w, int h) {
         super(w, h);
@@ -55,7 +59,16 @@ public class WeatherImage extends PiPanel {
     }
 
     private BufferedImage loadIcon(int w, int h){
-        BufferedImage image = weatherData.getIcon();
+        BufferedImage image;
+
+        if(weatherData.getWeather().toLowerCase().contains("storm")) {
+            image = stormAnimation.next();
+        }else if(weatherData.getWeather().toLowerCase().contains("rain")){
+            image = rainAnimation.next();
+        }else {
+            image = weatherData.getIcon();
+        }
+
         if(image.getWidth() != w || image.getHeight() != h){
             image = ImageTransform.resize(image,w,h);
         }

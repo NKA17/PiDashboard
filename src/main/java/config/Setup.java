@@ -23,8 +23,6 @@ public class Setup {
         windowColor();
         panelColor();
         screenColor();
-        clockUseMeridian();
-        clockUseMilitary();
         checkInternet();
         ip();
         localIP();
@@ -33,6 +31,19 @@ public class Setup {
         logging();
         showCursor();
         mode();
+        discord();
+    }
+
+    private static void discord(){
+        String botId = getArg("discord.botId");
+        if(botId != null){
+            thirdparty.discord.Configuration.BOT_ID = botId;
+        }
+
+        String token = getArg("discord.token");
+        if(botId != null){
+            thirdparty.discord.Configuration.TOKEN = token;
+        }
     }
 
     private static void mode(){
@@ -114,21 +125,7 @@ public class Setup {
     private static void wakeScreenTime(){
         String m = getArg("--time.wake");
         if(m != null) {
-            Configuration.WAKE = Boolean.parseBoolean(m);
-        }
-    }
-
-    private static void clockUseMilitary(){
-        String m = getArg("clock.military");
-        if(m != null) {
-            Configuration.CLOCK_MILITARY = Boolean.parseBoolean(m);
-        }
-    }
-
-    private static void clockUseMeridian(){
-        String m = getArg("clock.meridian");
-        if(m != null) {
-            Configuration.CLOCK_MERIDIAN = Boolean.parseBoolean(m);
+            //Configuration.WAKE = Boolean.parseBoolean(m);
         }
     }
 

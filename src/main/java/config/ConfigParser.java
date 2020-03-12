@@ -42,6 +42,10 @@ public class ConfigParser {
             Scanner config = new Scanner(new File(configLocation));
             while (config.hasNextLine()){
                 String line = config.nextLine();
+                if(line.startsWith("#")){
+                    continue;
+                }
+
                 int index = line.indexOf('=');
                 if(index == -1)
                     continue;
