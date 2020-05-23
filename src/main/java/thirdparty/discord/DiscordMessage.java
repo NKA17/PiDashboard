@@ -14,6 +14,22 @@ public class DiscordMessage {
     private String guildName;
     private String channelName;
     private String pfpURL;
+    private String attachmentURL = null;
+
+    public String getAttachmentURL() {
+        return attachmentURL;
+    }
+
+    public void setAttachmentURL(String attachmentURL) {
+        this.attachmentURL = attachmentURL;
+    }
+
+    public BufferedImage getAttachment(){
+        if(attachmentURL != null){
+            return ImageCache.getWithURL(getAttachmentURL());
+        }
+        return null;
+    }
 
     public String getChannelName() {
         return channelName;

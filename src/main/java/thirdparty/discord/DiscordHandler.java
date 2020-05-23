@@ -4,6 +4,7 @@ import jdk.nashorn.internal.parser.Token;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import ui.view.PiPanel;
@@ -36,6 +37,15 @@ public class DiscordHandler extends ListenerAdapter {
             message.setChannelName(event.getMessage().getChannel().getName());
             message.setUsername(event.getMessage().getAuthor().getName());
             message.setMessage(event.getMessage().getContentRaw());
+
+            if(event.getMessage().getAttachments().size() > 0) {
+                Message.Attachment attachment = event.getMessage().getAttachments().get(0);
+                if(attachment.getUrl().toLowerCase().matches(".+?(jpg|png|jpeg)")) {
+                    message.setAttachmentURL(attachment.getUrl());
+                    message.getAttachment();
+                }
+            }
+            message.getProfilePic();
 
             DiscordHub.message = message;
 

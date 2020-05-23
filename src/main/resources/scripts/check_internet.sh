@@ -1,3 +1,3 @@
 #!/bin/sh
 
-ping google.com
+ping -c 1 google.com

@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 
 public class DiscordHub {
+    //https://discordapp.com/developers/applications
     public static JDA jda = null;
 
     public static DiscordMessage message = new DiscordMessage();

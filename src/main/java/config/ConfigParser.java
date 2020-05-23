@@ -7,9 +7,15 @@ public class ConfigParser {
 
 
     private String configLocation;
+    private boolean ignoreCommentsInValue =  true;
     private HashMap<String,String> argsMap = new HashMap<>();
 
     public ConfigParser(String configLocation){
+        this(configLocation,true);
+    }
+
+    public ConfigParser(String configLocation, boolean ignoreCommentsInValue){
+        this.ignoreCommentsInValue = ignoreCommentsInValue;
         makeMap(configLocation);
     }
 
@@ -74,7 +80,61 @@ public class ConfigParser {
                 || s.equalsIgnoreCase("default");
     }
     private boolean skip(String k, String v) {
-        return k.equalsIgnoreCase("--config");
+        return k.equalsIgnoreCase("--config")
+                || (ignoreCommentsInValue && v.startsWith("#"));
     }
 
+    public boolean getBool(String key){
+        if(containsKey(key)){
+            return getArg(key).equalsIgnoreCase("true");
+        }else {
+            return false;
+        }
+    }
+
+    public int getInt(String key){
+        if(containsKey(key)){
+            return Integer.parseInt(getArg(key));
+        }else {
+            return 0;
+        }
+    }
+
+    public long getLong(String key){
+        if(containsKey(key)){
+            return Long.parseLong(getArg(key));
+        }else {
+            return 0;
+        }
+    }
+
+    public boolean getBool(String key, boolean defaultValue){
+        if(containsKey(key)){
+            return getArg(key).equalsIgnoreCase("true");
+        }else {
+            return defaultValue;
+        }
+    }
+
+    public int getInt(String key, int defaultValue){
+        if(containsKey(key)){
+            return Integer.parseInt(getArg(key));
+        }else {
+            return defaultValue;
+        }
+    }
+
+    public long getLong(String key, long defaultValue){
+        if(containsKey(key)){
+            return Long.parseLong(getArg(key));
+        }else {
+            return defaultValue;
+        }
+    }
+
+    public String getArg(String arg, String defaultValue){
+        if(containsKey(arg))
+            return argsMap.get(arg);
+        return defaultValue;
+    }
 }

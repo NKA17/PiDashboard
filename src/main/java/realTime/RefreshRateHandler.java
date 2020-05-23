@@ -25,4 +25,29 @@ public class RefreshRateHandler {
     public void pause(){
         play = false;
     }
+
+    public static long calculateInterval(long interval, String tu){
+        switch (tu.toLowerCase()){
+            case "hours":
+                return calculateInterval(interval, TimeUnit.HOURS);
+            case "minutes":
+                return calculateInterval(interval, TimeUnit.MINUTES);
+            case "seconds":
+                return calculateInterval(interval, TimeUnit.SECONDS);
+            default:
+                return calculateInterval(interval, TimeUnit.MILLISECONDS);
+        }
+    }
+    public static long calculateInterval(long interval, TimeUnit tu){
+        switch (tu){
+            case HOURS:
+                interval *= 60;
+            case MINUTES:
+                interval *= 60;
+            case SECONDS:
+                interval *= 1000;
+        }
+
+        return interval;
+    }
 }

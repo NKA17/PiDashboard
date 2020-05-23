@@ -1,10 +1,12 @@
 package ui.widget;
 
 import config.Configuration;
+import graphics.ImageCache;
 import thirdparty.discord.DiscordHub;
 import thirdparty.discord.DiscordMessage;
 import ui.tools.font.FontInfo;
 import ui.tools.font.FontTool;
+import ui.tools.graphics.ImageTransform;
 import ui.view.PiPanel;
 
 import java.awt.*;
@@ -39,22 +41,40 @@ public class DiscordMessagePiPanel extends PiPanel{
 
         BufferedImage pfp = message.getProfilePic((int)(getH()*.66),(int)(getH()*.66));
         g.drawImage(pfp,x,y+T,null);
-        x+=pfp.getWidth()+R;
+        y+=pfp.getHeight()+T;
 
-        FontInfo usernameInfo = FontTool.fitInBox(title,message.getUsername(),getW()-L-R-pfp.getWidth(),titleHeight);
+        FontInfo usernameInfo = FontTool.fitInBox(title,message.getUsername(),pfp.getWidth(),titleHeight);
         g.setFont(usernameInfo.getFont());
         FontTool.drawAAString(g,message.getUsername(),x+L,y+T);
-        y+=titleHeight+B+T;
+        y= getY()+T+titleHeight+B;
+        x+=pfp.getWidth()+R;
 
         Rectangle rect = new Rectangle(x,y,getW()-L-R-pfp.getWidth(),getH()-(y-getY()));
 
-        g.setColor(Configuration.WINDOW_BG_COLOR);
-        g.fillRect(rect.x,rect.y+T,rect.width,rect.height);
 
-        FontInfo messageFontInfo = FontTool.fitInBox(title, "Tq", rect.width-L-R, messageHeight);
-        g.setFont(messageFontInfo.getFont());
-        g.setColor(Configuration.TEXT_COLOR);
-        FontTool.drawAAStringInBox(g,message.getMessage(),rect.x+L, rect.y+T, rect.width-L-R,rect.height-T-B);
+        if(message.getAttachmentURL() == null) {
+            g.setColor(Configuration.WINDOW_BG_COLOR);
+            g.fillRect(rect.x,rect.y+T,rect.width,rect.height);
+
+            FontInfo messageFontInfo = FontTool.fitInBox(title, "Tq", rect.width - L - R, messageHeight);
+            g.setFont(messageFontInfo.getFont());
+            g.setColor(Configuration.TEXT_COLOR);
+            FontTool.drawAAStringInBox(g, message.getMessage(), rect.x + L, rect.y + T, rect.width - L - R, rect.height - T - B);
+
+        }else {
+            g.drawImage(getAttachmentImage(rect.height-T-B),rect.x+L,rect.y+T, null);
+        }
+    }
+
+    private BufferedImage getAttachmentImage(int heightContsraint){
+        BufferedImage image = DiscordHub.message.getAttachment();
+        int w = (int)((double)image.getWidth() / ((double) image.getHeight() / (double) heightContsraint));
+        if(image.getHeight() != heightContsraint || w != image.getWidth()){
+            image = ImageTransform.resize(image,w,heightContsraint);
+            ImageCache.put(DiscordHub.message.getAttachmentURL(),image);
+        }
+
+        return image;
     }
 
     @Override

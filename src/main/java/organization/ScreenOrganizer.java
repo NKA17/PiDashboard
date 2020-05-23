@@ -4,6 +4,7 @@ import config.Configuration;
 import raspberryPi.Printer;
 import ui.view.PiPanel;
 import ui.view.PiScreen;
+import ui.widget.Spacer;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -22,6 +23,10 @@ public class ScreenOrganizer {
 
     }
 
+    public PiPanel getCurrentFocus() {
+        return currentFocus;
+    }
+
     public void update(){
         List<PiPanel> panels = new ArrayList<>();
         panels.addAll(screen.getPanels());
@@ -34,7 +39,7 @@ public class ScreenOrganizer {
         }
 
         if(main == null){
-            focus(screen.getPanels().get(0));
+            focus(new Spacer(50));
         }else {
             focus(main);
         }

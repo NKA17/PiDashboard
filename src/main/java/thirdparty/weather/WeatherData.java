@@ -5,6 +5,7 @@ import thirdparty.ApiClient;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,23 +30,7 @@ public class WeatherData {
     }
 
     public BufferedImage getIcon() {
-        if(icon == null){
-            ApiClient client = new ApiClient(getIconURL());
-            try {
-                if(ImageCache.contains(getIconURL())){
-                    return ImageCache.get(getIconURL());
-                }
-
-                icon = client.getImage("");
-                ImageCache.put(getIconURL(),icon);
-            }catch (Exception e){
-                BufferedImage icon = new BufferedImage(50,50,BufferedImage.TYPE_4BYTE_ABGR);
-                icon.getGraphics().setColor(new Color(30,30,30));
-                icon.getGraphics().fillRect(0,0,50,50);
-                return icon;
-            }
-        }
-        return icon;
+        return ImageCache.getWithURL(getIconURL());
     }
 
     public void setIcon(BufferedImage icon) {

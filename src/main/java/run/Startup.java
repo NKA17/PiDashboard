@@ -6,12 +6,14 @@ import organization.ScreenOrganizer;
 import raspberryPi.Printer;
 import raspberryPi.RPiInterface;
 import realTime.ImmediateAction;
+import realTime.RefreshRateHandler;
 import realTime.TimeUnit;
 import thirdparty.discord.DiscordHandler;
 import thirdparty.location.LocationApi;
 import config.Configuration;
 import config.Setup;
 import ui.view.PiFrame;
+import ui.view.PiPanel;
 import ui.view.PiScreen;
 import ui.widget.*;
 
@@ -71,12 +73,10 @@ public class Startup {
         isp.setStatusTurnedBadAction(badAction);
         isp.setExtendedAction(extendedAction);
 
-        Clock clock = new Clock(clockScreen.getW(),clockScreen.getH());
-        clockScreen.addPiPanel(clock);
-
         ScreenOrganizer organizer = new ScreenOrganizer();
-        organizer.setMainPanel(clock);
         clockScreen.setOrganizer(organizer);
+
+        startClock(Setup.configParser,clockScreen);
 
         if(getLocationData()){
             TextPanel city = new TextPanel(Configuration.LOCATION_DATA.getCity()+", "+
@@ -85,9 +85,7 @@ public class Startup {
             clockScreen.addFooterPanel(city);
         }
 
-        WeatherImage weatherImage = new WeatherImage(150,60);
-        weatherImage.updateAfter(10, TimeUnit.MINUTES);
-        clockScreen.addPiPanel(weatherImage);
+        startWeather(Setup.configParser,clockScreen);
 
         LocalIpDisplay localIP = new LocalIpDisplay(60,30);
         localIP.setFormat("(%s)");
@@ -103,16 +101,9 @@ public class Startup {
             pf.getContentPane().setCursor(blankCursor);
         }
 
-        PiTempPanel ptp = new PiTempPanel();
-        ptp.setRefreshInterval(2,TimeUnit.SECONDS);
-        clockScreen.addPiPanel(ptp);
+        startTemp(Setup.configParser,clockScreen);
 
-        DiscordHandler dh = new DiscordHandler();
-        dh.start();
-
-        DiscordMessagePiPanel dmp = new DiscordMessagePiPanel();
-        dh.setObserved(dmp);
-        clockScreen.addHiddenPanel(dmp);
+        startDiscord(Setup.configParser,clockScreen);
 
         pf.pack();
         EventQueue.invokeLater(() -> {
@@ -145,5 +136,106 @@ public class Startup {
             e.printStackTrace();
         }
         System.exit(-1);
+    }
+
+    private static void startClock(ConfigParser cp, PiScreen screen){
+        Clock clock = new Clock(screen.getW(),screen.getH());
+        boolean added = addToScreen(cp,"clock",screen,clock);
+        if(added){
+            clock.setRefreshInterval(getRefreshInterval(cp,"clock", 200));
+            String mode = cp.getArg("clock.mode");
+            if(mode != null){
+                mode = mode.toLowerCase();
+                switch (mode){
+                    case "military":
+                        clock.useMilitaryTime();
+                        break;
+                    case "meridian":
+                        clock.setUseMeridean(true);
+                        break;
+                    case "basic":
+                        clock.setUseMeridean(false);
+                        break;
+                    default:
+                        clock.setUseMeridean(true);
+                }
+            }
+            clock.setUpdateRegex(cp.getArg("clock.updateRegex"));
+        }
+    }
+
+    private static void startTemp(ConfigParser cp, PiScreen screen){
+        PiTempPanel panel = new PiTempPanel();
+        boolean added = addToScreen(cp,"temp",screen,panel);
+        if(added){
+            panel.setRefreshInterval(getRefreshInterval(cp,"temp",1000));
+            panel.setHistorySize(cp.getInt("temp.history.size",30));
+            panel.setWarningTrheshold(cp.getInt("temp.threshold.warning",70));
+            panel.setWarningTrheshold(cp.getInt("temp.threshold.danger",80));
+            panel.setWarningTrheshold(cp.getInt("temp.threshold.emergencyClose",84));
+        }
+    }
+
+    private static void startWeather(ConfigParser cp, PiScreen screen){
+        WeatherImage panel = new WeatherImage(150,60);
+        boolean added = addToScreen(cp,"weather",screen,panel);
+        if(added){
+            panel.setRefreshInterval(getRefreshInterval(cp,"weather",600000));
+        }
+    }
+
+    private static void startDiscord(ConfigParser cp, PiScreen screen){
+        DiscordMessagePiPanel panel = new DiscordMessagePiPanel();
+        boolean added = addToScreen(cp,"discord",screen,panel);
+        if(added){
+            thirdparty.discord.Configuration.BOT_ID = cp.getArg("discord.botId");
+            thirdparty.discord.Configuration.TOKEN = cp.getArg("discord.token");
+            DiscordHandler dh = new DiscordHandler();
+            dh.setObserved(panel);
+            dh.start();
+        }
+    }
+
+    private static boolean addToScreen(ConfigParser cp, String module, PiScreen screen, PiPanel panel){
+        String position = cp.getArg("module."+module);
+
+        if(position == null){
+            return false;
+        }
+
+        position = position.toLowerCase();
+
+        switch (position){
+            case "none":
+                return false;
+            case "footer":
+                screen.addFooterPanel(panel);
+                break;
+            case "header":
+                screen.addPiPanel(panel);
+                break;
+            case "hidden":
+                screen.addHiddenPanel(panel);
+                break;
+        }
+
+        Printer.println("Module added: '%s' (%s)",module,position);
+
+        String isFocus = cp.getArg(module+".focused");
+        if(isFocus != null && isFocus.toLowerCase().equals("true")){
+            screen.getOrganizer().setMainPanel(panel);
+        }
+
+        return true;
+    }
+
+    private static long getRefreshInterval(ConfigParser cp, String module, long defaultValue){
+        if(!cp.containsKey(module+".interval")){
+            return defaultValue;
+        }
+        long interval = cp.getLong(module+".interval");
+        String unit = cp.getArg(module+".interval.unit");
+
+        return RefreshRateHandler.calculateInterval(interval,unit);
     }
 }

@@ -65,12 +65,21 @@ public class PiScreen extends PiPanel {
         screen.fillRect(0,0, getW(), getH());
 
         try {
+            PiPanel focus = null;
+            if(organizer != null){
+                focus = organizer.getCurrentFocus();
+                if(focus != null){
+                    focus.draw(screen);
+                }
+            }
             for (PiPanel p : panels) {
+                if(p == focus)continue;
                 p.draw(screen);
                 //screen.setColor(Color.RED);
                 //screen.drawRect(p.getX(),p.getY(),p.getW()-1,p.getH()-1);
             }
             for(PiPanel p: footers){
+                if(p == focus)continue;
                 p.draw(screen);
                 //screen.setColor(Color.RED);
                 //screen.drawRect(p.getX(),p.getY(),p.getW()-1,p.getH()-1);

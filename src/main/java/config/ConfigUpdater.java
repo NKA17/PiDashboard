@@ -10,7 +10,7 @@ public class ConfigUpdater {
         //RPiInterface.checkInternetConnection();
 
         ConfigParser local = new ConfigParser(args[0]);
-        ConfigParser remote = new ConfigParser(args[1]);
+        ConfigParser remote = new ConfigParser(args[1],false);
 
         Iterator<String> localIter = local.iterator();
         Iterator<String> remoteIter = remote.iterator();
@@ -22,7 +22,10 @@ public class ConfigUpdater {
             if (local.containsKey(k)) {
                 kv.add(String.format("%s=%s\n", k, local.getArg(k)));
             } else {
-                kv.add(String.format("%s=\n", k));
+                String v = remote.containsKey(k) && remote.getArg(k).startsWith("#")
+                        ? remote.getArg(k)
+                        : "";
+                kv.add(String.format("%s=%s\n", k, v));
             }
         }
         while(localIter.hasNext()){

@@ -2,6 +2,7 @@ package graphics;
 
 import enums.Axis;
 import config.Configuration;
+import raspberryPi.Printer;
 import thirdparty.ApiClient;
 import ui.tools.graphics.ImageTransform;
 
@@ -76,8 +77,10 @@ public class ImageCache {
                 ApiClient client = new ApiClient("");
                 BufferedImage image = client.getImage(url.toString());
                 cache.put(url.toString(),image);
+                Printer.println("Image added to cache '%s'",url.getPath());
                 return image;
             }catch (Exception e){
+                Printer.println("ERROR: Could not find image '%s'",url.getPath());
                 BufferedImage image = new BufferedImage(50,50,BufferedImage.TYPE_4BYTE_ABGR);
                 image.getGraphics().setColor(new Color(30,30,30));
                 image.getGraphics().fillRect(0,0,50,50);
@@ -95,13 +98,26 @@ public class ImageCache {
             try {
                 BufferedImage image = ImageIO.read(new File(path));
                 cache.put(path,image);
+                Printer.println("Image added to cache '%s'",path);
                 return image;
             }catch (Exception e){
+                Printer.println("ERROR: Could not find image '%s'",path);
                 BufferedImage image = new BufferedImage(50,50,BufferedImage.TYPE_4BYTE_ABGR);
                 image.getGraphics().setColor(new Color(30,30,30));
                 image.getGraphics().fillRect(0,0,50,50);
                 return image;
             }
+        }
+    }
+
+    public static BufferedImage getWithURL(String url){
+        try{
+            return get(new URL(url));
+        }catch (Exception e){
+            BufferedImage image = new BufferedImage(50,50,BufferedImage.TYPE_4BYTE_ABGR);
+            image.getGraphics().setColor(new Color(30,30,30));
+            image.getGraphics().fillRect(0,0,50,50);
+            return image;
         }
     }
 

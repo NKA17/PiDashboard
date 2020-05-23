@@ -223,9 +223,11 @@ public class RPiInterface {
                 if(m.find()){
                     Configuration.LOCATION_PUBLIC_IP = m.toMatchResult().group(1);
                     Printer.println("Public IP = (%s)",Configuration.LOCATION_PUBLIC_IP);
+                    reader.close();
                     return m.toMatchResult().group(1);
                 }
             }
+            Printer.println("Did not find public ip address");
             reader.close();
             return null;
         }catch (Exception e){

@@ -74,17 +74,23 @@ public class WeatherAPI {
             endPoint = getGridPointsEndPoint(endPoint);
 
             String response = client.makeRequest(endPoint);
-            JSONObject json = new JSONObject(response);
-            JSONObject properties = json.getJSONObject("properties");
-            JSONArray periods = properties.getJSONArray("periods");
-            JSONObject now = periods.getJSONObject(0);
+            try {
+                JSONObject json = new JSONObject(response);
+                JSONObject properties = json.getJSONObject("properties");
+                JSONArray periods = properties.getJSONArray("periods");
+                JSONObject now = periods.getJSONObject(0);
 
-            WeatherData wd = createData(now);
-
-            return wd;
+                WeatherData wd = createData(now);
+                Printer.println("Weather data received");
+                return wd;
+            }catch (Exception e){
+                Printer.println("ERROR: Failed to load response into json when getting weather.");
+            }
         }catch (IOException e){
             return getBadData();
         }
+
+        return getBadData();
     }
 
     private WeatherData createData(JSONObject object){
@@ -199,8 +205,6 @@ public class WeatherAPI {
 
         return list;
     }
-
-
 
     private boolean sameDay(WeatherData wd1, WeatherData wd2){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");

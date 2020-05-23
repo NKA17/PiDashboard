@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 public class Clock extends PiPanel {
     private Font font;
     private String format = "H:mm";
+    private String updateRegex = "\\d+(:)?59.*";
     private boolean useMeridean = true;
 
     public void useRegularPersonTime(){
@@ -92,24 +93,22 @@ public class Clock extends PiPanel {
 
     @Override
     public void update() {
-        String pattern = "\\d+(:)?59.*";
+        String pattern = updateRegex;
 
-        //pattern = ".*";
-
-        Clock me = this;
         String time = getTime();
         if(time.matches(pattern) && !time.equalsIgnoreCase(lastTime)){
-            DelayedAction da = new DelayedAction(57000) {
-                @Override
-                public void action() {
-                    PiPanel.addToUpdateQueue(me);
-                }
-            };
-            da.setDescription("Wake screen for hour change");
-            da.deploy();
+            PiPanel.addToUpdateQueue(this);
         }
 
         lastTime = time;
+    }
+
+    public String getUpdateRegex() {
+        return updateRegex;
+    }
+
+    public void setUpdateRegex(String updateRegex) {
+        this.updateRegex = updateRegex;
     }
 
     @Override

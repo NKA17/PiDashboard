@@ -1,5 +1,6 @@
 package thirdparty;
 
+import raspberryPi.Printer;
 import raspberryPi.RPiInterface;
 import config.Configuration;
 
@@ -48,6 +49,9 @@ public class ApiClient {
             }
             path = cleanURL(path);
             URL url = new URL(path);
+
+            Printer.println("Making Request (Image): %s",path);
+
             URLConnection urlConnection = url.openConnection();
             urlConnection.setRequestProperty("User-Agent","Chrome");
             BufferedImage img = ImageIO.read(urlConnection.getInputStream());
@@ -71,6 +75,8 @@ public class ApiClient {
 
             String requestUrl = cleanURL(endPoint);
 
+            Printer.println("Making Request: %s",requestUrl);
+
 
             HttpURLConnection conn = (HttpURLConnection) (new URL(requestUrl)).openConnection();
             conn.setRequestMethod("GET");
@@ -79,8 +85,10 @@ public class ApiClient {
 
 
             if (conn.getResponseCode() != 1000 && conn.getResponseCode() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + conn.getResponseCode());
+                Printer.println("ERROR: Request failed: HTTP error code : %d\n\tResponse: '%s'",
+                        conn.getResponseCode(), conn.getResponseMessage());
+                //throw new RuntimeException("Failed : HTTP error code : "
+                  //      + conn.getResponseCode());
             }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(

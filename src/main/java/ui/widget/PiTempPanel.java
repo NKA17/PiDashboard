@@ -21,7 +21,8 @@ public class PiTempPanel extends PiPanel {
     }
 
     private double temp = RPiInterface.getTemperature();
-    private double[] history = new double[20];
+    private int historySize = 20;
+    private double[] history = new double[historySize];
     private Color safe = new Color(0,200,100);
     private Color warning = new Color(200,200,100);
     private Color danger = new Color(200,50,75);
@@ -48,21 +49,22 @@ public class PiTempPanel extends PiPanel {
         int ww = getW()-L-R;
         int hh = getH()-T-B;
 
-        int x = getX()+L;
-        int dx = ww / history.length;
+        double x = getX()+L;
+        double dx = (double)ww / (double)history.length;
         int y = getY()+T+hh;
 
         Polygon p = new Polygon();
         for(int i = 0; i < history.length; i++){
-            p.addPoint(x,(int)(y - (history[i]/100)*hh));
+            double value = Math.max(0,history[i]-40);
+            p.addPoint((int)x,(int)(y - (value/60)*hh));
             if(history[i] > warningTrheshold){
                 g.setColor(getColor(getStatus(history[i])));
-                g.drawLine(x,(int)(y - (history[i]/100)*hh),x,y);
+                g.drawLine((int)x,(int)(y - (value/60)*hh),(int)x,y);
             }
             x+=dx;
         }
         x-=dx;
-        p.addPoint(x,y);
+        p.addPoint((int)x,y);
         p.addPoint(getX()+L,y);
 
         Color c = getColor(status);
@@ -73,12 +75,12 @@ public class PiTempPanel extends PiPanel {
 
         Polygon rect = new Polygon();
         rect.addPoint(getX()+L,getY()+T);
-        rect.addPoint(x,getY()+T);
-        rect.addPoint(x,y);
+        rect.addPoint((int)x,getY()+T);
+        rect.addPoint((int)x,y);
         rect.addPoint(getX()+L,y);
         g.drawPolygon(rect);
 
-        FontInfo f1 = FontTool.fitInBox(getFont(),"55.5°",(x)-(getX()+L),(int)(hh*(1.0/2.0)));
+        FontInfo f1 = FontTool.fitInBox(getFont(),"55.5°",((int)x)-(getX()+L),(int)(hh*(1.0/2.0)));
 
         g.setFont(f1.getFont());
         g.setColor(Configuration.TEXT_COLOR);
@@ -149,5 +151,38 @@ public class PiTempPanel extends PiPanel {
     @Override
     public boolean isPowered() {
         return false;
+    }
+
+    public int getHistorySize() {
+        return historySize;
+    }
+
+    public void setHistorySize(int historySize) {
+        this.historySize = historySize;
+        history = new double[historySize];
+    }
+
+    public int getDangerThreshold() {
+        return dangerThreshold;
+    }
+
+    public void setDangerThreshold(int dangerThreshold) {
+        this.dangerThreshold = dangerThreshold;
+    }
+
+    public int getWarningTrheshold() {
+        return warningTrheshold;
+    }
+
+    public void setWarningTrheshold(int warningTrheshold) {
+        this.warningTrheshold = warningTrheshold;
+    }
+
+    public int getOhShitThreshold() {
+        return ohShitThreshold;
+    }
+
+    public void setOhShitThreshold(int ohShitThreshold) {
+        this.ohShitThreshold = ohShitThreshold;
     }
 }
